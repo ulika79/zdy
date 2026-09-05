@@ -1,0 +1,3302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI服务器管理 + AI 生成器</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #f0f4f9;
+      color: #1e293b;
+      padding: 20px;
+    }
+    .app-container {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+    .section-divider {
+      border: none;
+      border-top: 2px dashed #dce3ed;
+      margin: 30px 0;
+    }
+  </style>
+
+  <!-- AutoDL 样式（保持不变） -->
+  <style>
+    .autodl-app * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    .autodl-app {
+      background: #f6f8fa;
+      padding: 0;
+      color: #1e293b;
+    }
+    .autodl-app .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .autodl-app .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      background: #fff;
+      padding: 20px 24px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+    .autodl-app .header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .autodl-app .header h1 small {
+      font-size: 14px;
+      font-weight: 400;
+      color: #64748b;
+    }
+    .autodl-app .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .autodl-app .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 18px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      background: #eef2f6;
+      color: #1e293b;
+    }
+    .autodl-app .btn:hover {
+      background: #e2e8f0;
+    }
+    .autodl-app .btn:active {
+      transform: scale(0.97);
+    }
+    .autodl-app .btn-primary {
+      background: #3b82f6;
+      color: #fff;
+    }
+    .autodl-app .btn-primary:hover {
+      background: #2563eb;
+    }
+    .autodl-app .btn-success {
+      background: #22c55e;
+      color: #fff;
+    }
+    .autodl-app .btn-success:hover {
+      background: #16a34a;
+    }
+    .autodl-app .btn-danger {
+      background: #ef4444;
+      color: #fff;
+    }
+    .autodl-app .btn-danger:hover {
+      background: #dc2626;
+    }
+    .autodl-app .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .autodl-app .btn-sm {
+      padding: 4px 14px;
+      font-size: 13px;
+    }
+    .autodl-app .stats {
+      font-size: 14px;
+      color: #64748b;
+      background: #f1f5f9;
+      padding: 4px 14px;
+      border-radius: 20px;
+    }
+    .autodl-app .search-section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 24px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      margin-bottom: 24px;
+    }
+    .autodl-app .search-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .autodl-app .search-row input {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 16px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+      background: #fafbfc;
+      transition: border 0.2s, box-shadow 0.2s;
+      outline: none;
+      color: #1e293b;
+    }
+    .autodl-app .search-row input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+      background: #fff;
+    }
+    .autodl-app .search-row .btn {
+      padding: 10px 24px;
+      font-size: 15px;
+      white-space: nowrap;
+    }
+    .autodl-app .search-hint {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 8px;
+    }
+    .autodl-app .results-section {
+      min-height: 120px;
+    }
+    .autodl-app .result-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      border-left: 4px solid #e2e8f0;
+      transition: border-color 0.3s;
+    }
+    .autodl-app .result-card.running {
+      border-left-color: #22c55e;
+    }
+    .autodl-app .result-card.stopped {
+      border-left-color: #ef4444;
+    }
+    .autodl-app .result-card.starting,
+    .autodl-app .result-card.stopping {
+      border-left-color: #f59e0b;
+    }
+    .autodl-app .result-card.unknown {
+      border-left-color: #94a3b8;
+    }
+    .autodl-app .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .autodl-app .card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .autodl-app .card-title .uuid {
+      font-size: 13px;
+      font-weight: 400;
+      color: #94a3b8;
+      font-family: monospace;
+      margin-left: 8px;
+    }
+    .autodl-app .card-body {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px 20px;
+      margin-bottom: 14px;
+      font-size: 14px;
+    }
+    .autodl-app .card-body .field {
+      display: flex;
+      flex-direction: column;
+    }
+    .autodl-app .card-body .field .label {
+      font-size: 12px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .autodl-app .card-body .field .value {
+      font-weight: 500;
+      margin-top: 2px;
+    }
+    .autodl-app .card-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding-top: 12px;
+      border-top: 1px solid #f1f5f9;
+    }
+    .autodl-app .status-badge {
+      display: inline-block;
+      padding: 2px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .autodl-app .status-running {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .autodl-app .status-stopped {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .autodl-app .status-unknown {
+      background: #f1f5f9;
+      color: #475569;
+    }
+    .autodl-app .status-starting {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+    .autodl-app .status-stopping {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+    .autodl-app .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #94a3b8;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+    .autodl-app .empty-state .icon {
+      font-size: 44px;
+      margin-bottom: 12px;
+    }
+    .autodl-app .empty-state .sub {
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    .autodl-app .loading-placeholder {
+      text-align: center;
+      padding: 40px 20px;
+      color: #94a3b8;
+    }
+    .autodl-app .loading-placeholder .spinner {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-bottom: 12px;
+    }
+    @keyframes autodl-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    .autodl-app .loading-placeholder .spinner {
+      animation: autodl-spin 0.7s linear infinite;
+    }
+    .autodl-app .toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(-12px);
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+      max-width: 440px;
+      word-break: break-word;
+    }
+    .autodl-app .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .autodl-app .toast-success {
+      background: #22c55e;
+    }
+    .autodl-app .toast-error {
+      background: #ef4444;
+    }
+    .autodl-app .toast-info {
+      background: #3b82f6;
+    }
+    .autodl-app .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(2px);
+    }
+    .autodl-app .modal-overlay.active {
+      display: flex;
+    }
+    .autodl-app .modal-box {
+      background: #fff;
+      padding: 28px 32px;
+      border-radius: 16px;
+      max-width: 440px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+    .autodl-app .modal-box h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .autodl-app .modal-box .sub {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+    .autodl-app .modal-box label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .autodl-app .modal-box select,
+    .autodl-app .modal-box input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 12px;
+      background: #fff;
+    }
+    .autodl-app .modal-box .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+    .autodl-app .modal-box .modal-actions .btn {
+      min-width: 70px;
+    }
+    .autodl-app .footer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #94a3b8;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      .autodl-app .header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .autodl-app .header-actions {
+        justify-content: stretch;
+      }
+      .autodl-app .header-actions .btn {
+        flex: 1;
+      }
+      .autodl-app .search-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .autodl-app .search-row input {
+        min-width: unset;
+      }
+      .autodl-app .search-row .btn {
+        width: 100%;
+      }
+      .autodl-app .card-body {
+        grid-template-columns: 1fr 1fr;
+      }
+      .autodl-app .card-actions {
+        flex-direction: column;
+      }
+      .autodl-app .card-actions .btn {
+        width: 100%;
+        justify-content: center;
+      }
+      .autodl-app .modal-box {
+        padding: 20px;
+      }
+    }
+  </style>
+
+  <!-- AI 生成器样式 -->
+  <style>
+    .ai-app {
+      --bg: #f0f4f9;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --border: #dce3ed;
+      --text: #0b1a33;
+      --text-2: #4a5b73;
+      --text-3: #7a8aa3;
+      --primary: #2a6df4;
+      --primary-hover: #1a56d6;
+      --primary-light: #e8f0fe;
+      --success: #0f9d58;
+      --error: #d93025;
+      --warning: #f9ab00;
+      --radius: 12px;
+      --shadow: 0 2px 12px rgba(0, 20, 50, 0.08);
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', PingFangSC-Regular, 'Microsoft YaHei', sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    @media (prefers-color-scheme: dark) {
+      .ai-app {
+        --bg: #0a111f;
+        --surface: #121c2e;
+        --surface-2: #1a263a;
+        --border: #2a3a52;
+        --text: #e6edf5;
+        --text-2: #9ab0cc;
+        --text-3: #6a7f99;
+        --primary: #5b8df7;
+        --primary-hover: #7aa3f9;
+        --primary-light: #1a2a44;
+        --shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+      }
+    }
+    .ai-app * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .ai-app {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .ai-app a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .ai-app a:hover {
+      text-decoration: underline;
+    }
+    .ai-app button {
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 18px;
+      transition: background 0.2s, transform 0.1s;
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .ai-app button:hover {
+      background: var(--border);
+    }
+    .ai-app button:active {
+      transform: scale(0.97);
+    }
+    .ai-app button.primary {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .ai-app button.primary:hover {
+      background: var(--primary-hover);
+    }
+    .ai-app button.primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .ai-app button.danger {
+      background: var(--error);
+      color: #fff;
+      border-color: var(--error);
+    }
+    .ai-app button.danger:hover {
+      background: #b71c1c;
+    }
+    .ai-app button.success {
+      background: var(--success);
+      color: #fff;
+      border-color: var(--success);
+    }
+    .ai-app button.success:hover {
+      background: #0b7e48;
+    }
+    .ai-app input,
+    .ai-app select,
+    .ai-app textarea {
+      font-family: inherit;
+      font-size: 13px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+    .ai-app input:focus,
+    .ai-app select:focus,
+    .ai-app textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(42, 109, 244, 0.15);
+    }
+    .ai-app textarea {
+      resize: vertical;
+      min-height: 60px;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+    .ai-app ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .ai-app ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .ai-app ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
+    }
+    .ai-app ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-3);
+    }
+    .ai-app .app {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+    .ai-app .header-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 16px 24px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .ai-app .header-center .title-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      position: relative;
+    }
+    .ai-app .header-center .title-row h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0;
+      padding: 0 80px;
+      text-align: center;
+      color: var(--text);
+    }
+    .ai-app .header-center .title-row h1 .hl {
+      color: var(--primary);
+    }
+    .ai-app .header-center .header-actions {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .ai-app .header-center .header-actions .base-url-group {
+      display: none !important;
+    }
+    .ai-app .header-center .contact-row {
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-2);
+      margin-top: 2px;
+    }
+    .ai-app .header-center .contact-row .badge {
+      font-size: 13px;
+      font-weight: 400;
+      background: var(--surface-2);
+      padding: 2px 18px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--text-2);
+    }
+    @media (max-width: 720px) {
+      .ai-app .header-center .title-row h1 {
+        font-size: 18px;
+        padding: 0 70px 0 10px;
+      }
+      .ai-app .header-center .header-actions {
+        position: static;
+        transform: none;
+        justify-content: center;
+        margin-top: 6px;
+        flex-wrap: wrap;
+      }
+      .ai-app .header-center .title-row {
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+    }
+    @media (max-width: 480px) {
+      .ai-app .header-center .title-row h1 {
+        font-size: 16px;
+        padding: 0 60px 0 6px;
+      }
+      .ai-app .header-center .header-actions button {
+        font-size: 12px;
+        padding: 4px 12px;
+      }
+      .ai-app .header-center .contact-row .badge {
+        font-size: 12px;
+        padding: 2px 12px;
+      }
+    }
+    .ai-app .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 960px) {
+      .ai-app .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .ai-app .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+    .ai-app .card:last-child {
+      margin-bottom: 0;
+    }
+    .ai-app .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+    .ai-app .card-title .sub {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-3);
+      margin-left: auto;
+    }
+    .ai-app .card-title .count {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-2);
+      background: var(--surface-2);
+      padding: 0 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .ai-app .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .ai-app .row+.row {
+      margin-top: 10px;
+    }
+    .ai-app .row label {
+      font-weight: 500;
+      color: var(--text-2);
+      font-size: 13px;
+      white-space: nowrap;
+      min-width: 60px;
+    }
+    .ai-app .row .flex-1 {
+      flex: 1;
+      min-width: 120px;
+    }
+    .ai-app .row .flex-2 {
+      flex: 2;
+      min-width: 160px;
+    }
+    .ai-app .row .flex-3 {
+      flex: 3;
+      min-width: 200px;
+    }
+    .ai-app .param-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .ai-app .param-table th {
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-2);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 6px 8px 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .ai-app .param-table td {
+      padding: 6px 8px 6px 0;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--border);
+    }
+    .ai-app .param-table tr:last-child td {
+      border-bottom: none;
+    }
+    .ai-app .param-table .key-input {
+      font-family: var(--mono);
+      font-size: 12px;
+      width: 140px;
+      min-width: 90px;
+    }
+    .ai-app .param-table .val-input {
+      font-family: var(--mono);
+      font-size: 12px;
+      min-width: 100px;
+      flex: 1;
+    }
+    .ai-app .param-table .val-textarea {
+      font-family: var(--mono);
+      font-size: 12px;
+      min-height: 80px;
+      resize: vertical;
+      flex: 1;
+      min-width: 100px;
+      line-height: 1.6;
+    }
+    .ai-app .param-table .file-btn {
+      font-size: 11px;
+      padding: 4px 12px;
+      white-space: nowrap;
+    }
+    .ai-app .param-table .del-btn {
+      font-size: 16px;
+      line-height: 1;
+      padding: 0 6px;
+      background: transparent;
+      border: none;
+      color: var(--text-3);
+    }
+    .ai-app .param-table .del-btn:hover {
+      color: var(--error);
+      background: transparent;
+    }
+    .ai-app .param-table .type-select {
+      width: 80px;
+      min-width: 60px;
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+    .ai-app .param-table .asset-select-small {
+      width: 120px;
+      min-width: 80px;
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+    .ai-app .file-manager-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 960px) {
+      .ai-app .file-manager-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .ai-app .file-panel {
+      background: var(--surface-2);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      min-height: 340px;
+    }
+    .ai-app .file-panel .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .ai-app .file-panel .panel-header .badge-count {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-3);
+      background: var(--surface);
+      padding: 0 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .ai-app .file-panel .panel-header .refresh-btn {
+      font-size: 12px;
+      padding: 2px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-2);
+    }
+    .ai-app .file-panel .panel-header .refresh-btn:hover {
+      background: var(--border);
+    }
+    .ai-app .upload-zone-compact {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      transition: border 0.2s, background 0.2s;
+      cursor: pointer;
+      background: var(--surface);
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+    .ai-app .upload-zone-compact:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .ai-app .upload-zone-compact.dragover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .ai-app .upload-zone-compact .icon {
+      font-size: 20px;
+      display: block;
+    }
+    .ai-app .upload-zone-compact .hint {
+      font-size: 12px;
+      color: var(--text-2);
+    }
+    .ai-app .upload-zone-compact .sub-hint {
+      font-size: 11px;
+      color: var(--text-3);
+    }
+    .ai-app .upload-status-compact {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-top: 4px;
+    }
+    .ai-app .file-list-container {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 300px;
+      min-height: 120px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 4px 0;
+    }
+    .ai-app .file-list-container .file-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      border-bottom: 1px solid var(--surface-2);
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      gap: 8px;
+    }
+    .ai-app .file-list-container .file-item:last-child {
+      border-bottom: none;
+    }
+    .ai-app .file-list-container .file-item:hover {
+      background: var(--primary-light);
+    }
+    .ai-app .file-list-container .file-item.active {
+      background: var(--primary-light);
+      border-left: 3px solid var(--primary);
+    }
+    .ai-app .file-list-container .file-item .file-name {
+      flex: 1;
+      font-family: var(--mono);
+      font-size: 12px;
+      word-break: break-all;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .ai-app .file-list-container .file-item .file-size {
+      font-size: 11px;
+      color: var(--text-3);
+      flex-shrink: 0;
+      margin-right: 8px;
+    }
+    .ai-app .file-list-container .file-item .file-dl {
+      font-size: 16px;
+      color: var(--primary);
+      text-decoration: none;
+      flex-shrink: 0;
+      padding: 0 4px;
+    }
+    .ai-app .file-list-container .file-item .file-dl:hover {
+      color: var(--primary-hover);
+    }
+    .ai-app .file-list-container .empty-files {
+      text-align: center;
+      padding: 40px 10px;
+      color: var(--text-3);
+      font-size: 13px;
+    }
+    .ai-app .file-list-container .empty-files .icon {
+      font-size: 28px;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .ai-app .file-preview-compact {
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 12px;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .ai-app .file-preview-compact img,
+    .ai-app .file-preview-compact video,
+    .ai-app .file-preview-compact audio {
+      max-width: 100%;
+      max-height: 160px;
+      border-radius: 6px;
+    }
+    .ai-app .file-preview-compact video,
+    .ai-app .file-preview-compact audio {
+      width: 100%;
+      max-height: 160px;
+    }
+    .ai-app .file-preview-compact .placeholder {
+      color: var(--text-3);
+      font-size: 13px;
+    }
+    .ai-app .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+    .ai-app .result-item {
+      background: var(--surface-2);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: transform 0.15s;
+    }
+    .ai-app .result-item:hover {
+      transform: translateY(-2px);
+    }
+    .ai-app .result-item .media-wrap {
+      position: relative;
+      background: #000;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .ai-app .result-item .media-wrap img,
+    .ai-app .result-item .media-wrap video,
+    .ai-app .result-item .media-wrap audio {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .ai-app .result-item .media-wrap audio {
+      height: 60px;
+      object-fit: none;
+      padding: 8px;
+    }
+    .ai-app .result-item .media-wrap .type-tag {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      padding: 2px 10px;
+      border-radius: 12px;
+    }
+    .ai-app .result-item .info {
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--text-2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .ai-app .result-item .info .filename {
+      font-family: var(--mono);
+      font-size: 11px;
+      word-break: break-all;
+      flex: 1;
+      min-width: 60px;
+    }
+    .ai-app .result-item .info .dl-link {
+      font-size: 18px;
+      line-height: 1;
+      color: var(--primary);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .ai-app .result-item .info .dl-link:hover {
+      background: var(--primary-light);
+      text-decoration: none;
+    }
+    .ai-app .empty-state {
+      text-align: center;
+      padding: 30px 10px;
+      color: var(--text-3);
+    }
+    .ai-app .empty-state .icon {
+      font-size: 40px;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .ai-app .empty-state p {
+      font-size: 13px;
+    }
+    .ai-app .mt-8 {
+      margin-top: 8px;
+    }
+    .ai-app .mt-12 {
+      margin-top: 12px;
+    }
+    .ai-app .mt-16 {
+      margin-top: 16px;
+    }
+    .ai-app .flex {
+      display: flex;
+    }
+    .ai-app .flex-center {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ai-app .flex-wrap {
+      flex-wrap: wrap;
+    }
+    .ai-app .text-mono {
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+    .ai-app .text-small {
+      font-size: 12px;
+      color: var(--text-3);
+    }
+    .ai-app .truncate {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    @media (max-width: 600px) {
+      .ai-app .header-center .title-row h1 {
+        padding: 0 60px 0 10px;
+        font-size: 18px;
+      }
+      .ai-app .header-center .header-actions {
+        position: static;
+        transform: none;
+        justify-content: center;
+        margin-top: 6px;
+      }
+      .ai-app .grid {
+        grid-template-columns: 1fr;
+      }
+      .ai-app .card {
+        padding: 16px;
+      }
+      .ai-app .param-table .key-input {
+        width: 80px;
+        min-width: 60px;
+      }
+      .ai-app .param-table .type-select {
+        width: 60px;
+        min-width: 50px;
+        font-size: 11px;
+      }
+      .ai-app .param-table .asset-select-small {
+        width: 80px;
+        min-width: 60px;
+      }
+      .ai-app .row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .ai-app .row label {
+        min-width: 0;
+      }
+      .ai-app .results-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .ai-app .file-manager-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 400px) {
+      .ai-app .results-grid {
+        grid-template-columns: 1fr;
+      }
+      .ai-app .param-table td {
+        padding: 4px 4px 4px 0;
+      }
+      .ai-app .param-table .key-input {
+        width: 60px;
+        min-width: 50px;
+        font-size: 11px;
+      }
+      .ai-app .param-table .asset-select-small {
+        width: 60px;
+        min-width: 50px;
+      }
+      .ai-app .param-table .val-textarea {
+        min-height: 60px;
+      }
+      .ai-app .file-list-container .file-item {
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .ai-app .file-list-container .file-item .file-name {
+        white-space: normal;
+        word-break: break-all;
+      }
+    }
+    .ai-app .status-box {
+      background: var(--surface-2);
+      border-radius: 8px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 12px;
+      min-height: 48px;
+      max-height: 120px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: var(--text-2);
+      line-height: 1.7;
+    }
+    .ai-app .status-box .highlight {
+      color: var(--text);
+      font-weight: 500;
+    }
+    .ai-app .status-box .ok {
+      color: var(--success);
+    }
+    .ai-app .status-box .err {
+      color: var(--error);
+    }
+    .ai-app .status-box .warn {
+      color: var(--warning);
+    }
+    .ai-app .placeholder-progress {
+      margin-top: 8px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-2);
+      display: none;
+    }
+    .ai-app .placeholder-progress.active {
+      display: block;
+    }
+    .ai-app .placeholder-progress .bar {
+      height: 4px;
+      background: var(--primary);
+      border-radius: 4px;
+      margin-top: 4px;
+      width: 0%;
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <!-- AutoDL 部分 -->
+  <div class="autodl-app">
+    <div class="container">
+      <div class="header">
+        <h1>🚀 AI服务器控制台 <small>精确匹配</small></h1>
+        <div class="header-actions">
+          <span class="stats" id="autodl-stats">就绪</span>
+          <button class="btn" id="autodl-tokenBtn" title="设置AutoDL API Token（仅保存在本机浏览器，不写入网页）">🔑 Token</button>
+          <button class="btn" id="autodl-proxyBtn" title="代理模式：填 Cloudflare Worker 地址和客户密钥，真正的 Token 存在云端代理里，本机和网页都不保存">🛡️ 代理</button>
+          <button class="btn btn-primary" id="autodl-refreshBtn">⟳ 刷新</button>
+        </div>
+      </div>
+      <div id="autodl-toast" class="toast"></div>
+      <div class="search-section">
+        <div class="search-row">
+          <input type="text" id="autodl-searchInput" placeholder="输入姓名电话（精确匹配）" autofocus />
+          <button class="btn btn-primary" id="autodl-searchBtn">🔍 查询</button>
+        </div>
+        <div class="search-hint">💡 必须与姓名电话完全一致（区分大小写）</div>
+      </div>
+      <div class="results-section" id="autodl-resultsSection">
+        <div class="empty-state" id="autodl-initialEmpty">
+          <div class="icon">🔎</div>
+          <div>输入姓名电话开始查询</div>
+          <div class="sub">精确匹配，区分大小写</div>
+        </div>
+        <div class="loading-placeholder" id="autodl-loadingPlaceholder" style="display:none;">
+          <div class="spinner"></div>
+          <div>正在查询实例…</div>
+        </div>
+        <div id="autodl-resultsContainer" style="display:none;"></div>
+        <div class="empty-state" id="autodl-noResults" style="display:none;">
+          <div class="icon">😕</div>
+          <div>未找到匹配的实例</div>
+          <div class="sub">请检查名称或 UUID 是否完全正确（区分大小写）</div>
+        </div>
+      </div>
+      <div class="footer">充值微信16500234000，余额不足自动关机</div>
+    </div>
+    <div class="modal-overlay" id="autodl-powerModal">
+      <div class="modal-box">
+        <h3>⚡ 开机设置</h3>
+        <div class="sub" id="autodl-modalInstanceName">实例：</div>
+        <label for="autodl-gpuSelect">选择 GPU 规格</label>
+        <select id="autodl-gpuSelect"></select>
+        <div style="font-size:13px; color:#94a3b8; margin-top:-6px; margin-bottom:12px;">
+          ⚠️ 建议优先使用"默认（实例原有规格）"，其他规格可能因地域/机型限制而无法启动
+        </div>
+        <label for="autodl-gpuCustom">自定义规格 ID（可选）</label>
+        <input type="text" id="autodl-gpuCustom" placeholder="例如 h800, v-48g, 5090-p" />
+        <div class="modal-actions">
+          <button class="btn" id="autodl-modalCancel">取消</button>
+          <button class="btn btn-success" id="autodl-modalConfirm">确认开机</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider" />
+
+  <!-- AI 生成器部分 -->
+  <div class="ai-app">
+    <div class="app" id="ai-app-root">
+
+      <header class="header-center">
+        <div class="title-row">
+          <h1>⚡ 张大业<span class="hl">AI视频</span>生成器</h1>
+          <div class="header-actions">
+            <div class="base-url-group">
+              <label>BASE URL</label>
+              <input type="text" id="ai-baseUrl" value="" placeholder="点右上角 ⚙️ 服务器 设置地址" />
+            </div>
+            <button id="ai-settingsBtn" title="设置ComfyUI服务器地址（仅保存在本机浏览器，不写入网页）">⚙️ 服务器</button>
+            <button class="primary" id="ai-loadWorkflowsBtn">📋 加载列表</button>
+            <span id="ai-statusDot" class="status-dot idle"></span>
+            <span id="ai-statusText" class="text-small" style="font-weight:500;">就绪</span>
+          </div>
+        </div>
+        <div class="contact-row">
+          <span class="badge">试用→抖音号→数字（添加时可能好友过多有风险提醒是正常的）</span>
+        </div>
+      </header>
+
+      <div class="grid">
+
+        <!-- 左栏 -->
+        <div class="left-col">
+
+          <!-- 工作流配置 -->
+          <div class="card">
+            <div class="card-title">
+              📄 工作流 <span class="sub">选择后自动加载参数</span>
+            </div>
+            <div class="row">
+              <label>ID</label>
+              <input type="text" id="ai-workflowId" class="flex-3" placeholder="例如: 1.单人口播" />
+              <select id="ai-workflowSelect" class="flex-1" style="width:auto;min-width:100px;">
+                <option value="">— 选择已保存 —</option>
+              </select>
+            </div>
+            <div class="row mt-8">
+              <button id="ai-loadConfigBtn" class="primary" style="padding:4px 16px;font-size:12px;">📥 加载参数</button>
+              <span class="text-small" id="ai-configStatus" style="color:var(--text-3);">未加载</span>
+            </div>
+          </div>
+
+          <!-- 参数配置 -->
+          <div class="card">
+            <div class="card-title">
+              ⚙️ 参数 <span class="sub">input_values</span>
+              <span class="count" id="ai-paramCount">0</span>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="param-table" id="ai-paramTable">
+                <thead>
+                  <tr>
+                    <th style="width:25%;">Key (节点:字段)</th>
+                    <th style="width:15%;">类型</th>
+                    <th style="width:50%;">Value</th>
+                    <th style="width:10%;text-align:right;">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="ai-paramBody">
+                  <!-- 动态渲染 -->
+                </tbody>
+              </table>
+            </div>
+            <div class="row mt-8">
+              <button id="ai-addParamBtn" class="text-small" style="padding:4px 14px;">➕ 添加参数</button>
+              <button id="ai-clearParamsBtn" class="text-small danger" style="padding:4px 14px;">🗑️ 清空</button>
+            </div>
+          </div>
+
+          <!-- 文件管理 -->
+          <div class="card">
+            <div class="card-title">
+              📎 文件管理 <span class="sub">输入 / 输出</span>
+            </div>
+            <div class="file-manager-grid">
+              <div class="file-panel input-panel">
+                <div class="panel-header">
+                  <span>📂 输入文件 <span class="badge-count" id="ai-inputCount">0</span></span>
+                  <button class="refresh-btn" id="ai-refreshInputBtn">⟳ 刷新</button>
+                </div>
+                <div class="upload-zone-compact" id="ai-uploadZoneCompact">
+                  <span class="icon">📁</span>
+                  <div class="hint">点击或拖拽上传到 <strong>input</strong></div>
+                  <div class="sub-hint">图片 · 视频 · 音频 · 任意文件</div>
+                  <input type="file" id="ai-fileInputCompact" style="display:none;" />
+                </div>
+                <div class="upload-status-compact" id="ai-uploadStatusCompact">就绪</div>
+                <div class="file-list-container" id="ai-inputFileList">
+                  <div class="empty-files"><span class="icon">📭</span>暂无输入文件</div>
+                </div>
+                <div class="file-preview-compact" id="ai-inputPreview">
+                  <span class="placeholder">点击文件预览</span>
+                </div>
+              </div>
+              <div class="file-panel output-panel">
+                <div class="panel-header">
+                  <span>📂 输出文件 <span class="badge-count" id="ai-outputCount">0</span></span>
+                  <button class="refresh-btn" id="ai-refreshOutputBtn">⟳ 刷新</button>
+                </div>
+                <div class="file-list-container" id="ai-outputFileList">
+                  <div class="empty-files"><span class="icon">📭</span>暂无输出文件</div>
+                </div>
+                <div class="file-preview-compact" id="ai-outputPreview">
+                  <span class="placeholder">点击文件预览</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 执行 -->
+          <div class="card">
+            <div class="card-title">🚀 执行 <span class="sub">提交生成任务</span></div>
+            <div class="row">
+              <button class="primary" id="ai-generateBtn" style="flex:1;padding:10px 20px;font-weight:600;">▶ 生成</button>
+              <button class="danger" id="ai-stopBtn" style="padding:10px 20px;" disabled>⏹ 停止</button>
+              <button id="ai-clearResultBtn" class="text-small" style="padding:10px 16px;">🗑️ 清空结果</button>
+            </div>
+            <div class="row mt-8">
+              <label style="min-width:0;">轮询间隔</label>
+              <select id="ai-pollInterval" style="width:80px;padding:4px 8px;">
+                <option value="1000">1s</option>
+                <option value="1500">1.5s</option>
+                <option value="2000">2s</option>
+                <option value="3000">3s</option>
+                <option value="5000" selected>5s</option>
+              </select>
+              <label style="min-width:0;">最大轮询</label>
+              <select id="ai-maxPolls" style="width:80px;padding:4px 8px;">
+                <option value="30">30次</option>
+                <option value="60">60次</option>
+                <option value="120">120次</option>
+                <option value="300">300次</option>
+                <option value="1000" selected>1000次</option>
+              </select>
+            </div>
+            <div class="placeholder-progress" id="ai-placeholderProgress">
+              <span id="ai-placeholderStatus">⏳ 生成占位文件...</span>
+              <div class="bar" id="ai-placeholderBar"></div>
+            </div>
+          </div>
+
+          <!-- 状态 -->
+          <div class="card">
+            <div class="card-title">📡 状态 <span class="sub" id="ai-promptIdDisplay">—</span></div>
+            <div class="status-box" id="ai-logBox"><span class="text-small" style="color:var(--text-3);">等待操作…</span></div>
+            <div class="row mt-8">
+              <span class="text-small" id="ai-progressText" style="color:var(--text-3);">就绪</span>
+              <span class="text-small" style="color:var(--text-3);margin-left:auto;" id="ai-elapsedTime">⏱ 0s</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 右栏：结果 -->
+        <div class="right-col">
+          <div class="card" style="height:100%;display:flex;flex-direction:column;">
+            <div class="card-title">
+              🖼️ 生成结果
+              <span class="sub" id="ai-resultCount">0 个文件</span>
+              <button id="ai-downloadAllBtn" class="text-small" style="padding:2px 14px;margin-left:auto;">📦 全部下载</button>
+            </div>
+            <div id="ai-resultsContainer" style="flex:1;overflow-y:auto;min-height:200px;">
+              <div class="empty-state">
+                <span class="icon">🖼️</span>
+                <p>暂无结果，提交生成任务后自动显示</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <input type="file" id="ai-hiddenFileInput" style="display:none;" />
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- 脚本：AutoDL -->
+<!-- ============================================================ -->
+<script>
+  (function() {
+    'use strict';
+
+    /* Token 不写死在网页里：保存在使用者本机浏览器的 localStorage，点右上角 🔑 Token 设置。
+       别人拿到这个网页文件也用不了——没有 Token 就调不动任何接口。 */
+    const TOKEN_KEY = 'autodl_token';
+    function getToken() {
+      try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+    }
+    /* ===== 代理模式配置（与下方 AI 生成器脚本共用同名 localStorage 键） ===== */
+    const PROXY_URL_KEY = 'proxy_url';
+    const PROXY_CKEY_KEY = 'proxy_key';
+    function getProxy() {
+      try {
+        const u = localStorage.getItem(PROXY_URL_KEY) || '';
+        const k = localStorage.getItem(PROXY_CKEY_KEY) || '';
+        if (!u) return null;
+        return { url: u.replace(/\/+$/, ''), key: k.trim() };
+      } catch (e) { return null; }
+    }
+    function proxyBase() {
+      const p = getProxy();
+      if (!p) return '';
+      return p.key ? p.url + '/k/' + encodeURIComponent(p.key) : p.url;
+    }
+    const BASE_URL = 'https://www.autodl.art';
+
+    const specDisplayMap = {
+      'h800': 'H800-80G (通用型)',
+      'v-48g': '4090-48G (通用型)',
+      'pro6000-p': 'PRO6000-96G (性能型)',
+      'v-32g-p': '4080(S)-32G (性能型)',
+      'v-48g-350w': '3090-48G (通用型)',
+      '5090-p': '5090-32G (性能型)'
+    };
+    const ALL_KNOWN_SPECS = Object.keys(specDisplayMap);
+
+    const searchInput = document.getElementById('autodl-searchInput');
+    const searchBtn = document.getElementById('autodl-searchBtn');
+    const refreshBtn = document.getElementById('autodl-refreshBtn');
+    const statsEl = document.getElementById('autodl-stats');
+    const toastEl = document.getElementById('autodl-toast');
+    const loadingPlaceholder = document.getElementById('autodl-loadingPlaceholder');
+    const resultsContainer = document.getElementById('autodl-resultsContainer');
+    const initialEmpty = document.getElementById('autodl-initialEmpty');
+    const noResults = document.getElementById('autodl-noResults');
+
+    const modalOverlay = document.getElementById('autodl-powerModal');
+    const gpuSelect = document.getElementById('autodl-gpuSelect');
+    const gpuCustom = document.getElementById('autodl-gpuCustom');
+    const modalConfirm = document.getElementById('autodl-modalConfirm');
+    const modalCancel = document.getElementById('autodl-modalCancel');
+    const modalInstanceName = document.getElementById('autodl-modalInstanceName');
+
+    let toastTimer = null;
+    let currentInstance = null;
+    let cachedInstances = [];
+
+    function showToast(message, type = 'info', duration = 5000) {
+      if (toastTimer) clearTimeout(toastTimer);
+      toastEl.textContent = message;
+      toastEl.className = 'toast';
+      void toastEl.offsetWidth;
+      toastEl.classList.add('show');
+      if (type === 'success') toastEl.classList.add('toast-success');
+      else if (type === 'error') toastEl.classList.add('toast-error');
+      else toastEl.classList.add('toast-info');
+      toastTimer = setTimeout(() => {
+        toastEl.classList.remove('show');
+        toastTimer = null;
+      }, duration);
+    }
+
+    function getStatusBadge(status) {
+      const map = { 'running': 'status-running', 'stopped': 'status-stopped', 'starting': 'status-starting',
+        'stopping': 'status-stopping' };
+      const cls = map[status] || 'status-unknown';
+      return `<span class="status-badge ${cls}">${status || '未知'}</span>`;
+    }
+
+    function getSpecDisplay(specId) {
+      if (!specId) return '-';
+      return specDisplayMap[specId] || specId;
+    }
+
+    async function apiCall(endpoint, method = 'POST', body = null) {
+      const proxy = getProxy();
+      if (!proxy && !getToken()) {
+        const e = new Error('未设置 Token：请点右上角 🔑 Token 粘贴你的令牌，或点 🛡️ 代理 使用云端代理');
+        e.code = 'NoToken';
+        throw e;
+      }
+      let url, headers;
+      if (proxy) {
+        /* 代理模式：真 Token 在云端 Worker 里，本机只需要代理地址（+客户密钥） */
+        url = proxyBase() + '/autodl' + endpoint;
+        headers = { 'Content-Type': 'application/json' };
+        if (proxy.key) headers['X-Client-Key'] = proxy.key;
+      } else {
+        url = `${BASE_URL}${endpoint}`;
+        headers = { 'Authorization': getToken(), 'Content-Type': 'application/json' };
+      }
+      const options = { method, headers };
+      if (body) options.body = JSON.stringify(body);
+      const response = await fetch(url, options);
+      const data = await response.json();
+      if (data.code !== 'Success') {
+        const err = new Error(data.msg || data.code || '请求失败');
+        err.code = data.code;
+        err.response = data;
+        throw err;
+      }
+      return data;
+    }
+
+    async function fetchInstances(pageIndex = 1, pageSize = 200) {
+      const data = await apiCall('/api/v1/adl_dev/dev/instance/pro/list', 'POST', { page_index: pageIndex,
+        page_size: pageSize });
+      return data.data;
+    }
+
+    async function powerOn(instanceUuid, gpuSpecUuid = null) {
+      const payload = { instance_uuid: instanceUuid, payload: 'gpu' };
+      if (gpuSpecUuid && gpuSpecUuid.trim() !== '') payload.gpu_spec_uuid = gpuSpecUuid.trim();
+      await apiCall('/api/v1/adl_dev/dev/instance/pro/power_on', 'POST', payload);
+    }
+
+    async function powerOff(instanceUuid) {
+      await apiCall('/api/v1/adl_dev/dev/instance/pro/power_off', 'POST', { instance_uuid: instanceUuid });
+    }
+
+    function matchInstances(list, keyword) {
+      if (!list || list.length === 0) return [];
+      const kw = keyword.trim();
+      if (!kw) return [];
+      return list.filter(inst => (inst.name && inst.name === kw) || (inst.uuid && inst.uuid === kw));
+    }
+
+    async function queryAndRender() {
+      const keyword = searchInput.value.trim();
+      if (!keyword) { showToast('请输入实例名称或 UUID', 'info', 3000); return; }
+
+      loadingPlaceholder.style.display = 'block';
+      resultsContainer.style.display = 'none';
+      initialEmpty.style.display = 'none';
+      noResults.style.display = 'none';
+      statsEl.textContent = '查询中...';
+      searchBtn.disabled = true;
+      searchBtn.textContent = '⏳ 查询中';
+
+      try {
+        const result = await fetchInstances(1, 200);
+        const list = result.list || [];
+        cachedInstances = list;
+        const matched = matchInstances(list, keyword);
+        if (matched.length === 0) {
+          loadingPlaceholder.style.display = 'none';
+          noResults.style.display = 'block';
+          statsEl.textContent = '未找到匹配';
+          return;
+        }
+        loadingPlaceholder.style.display = 'none';
+        resultsContainer.style.display = 'block';
+        renderResults(matched);
+        statsEl.textContent = `匹配 ${matched.length} 个实例`;
+      } catch (err) {
+        let msg = err.message;
+        if (err.code) msg += ` (code: ${err.code})`;
+        if (err.response) msg += ` 详情: ${JSON.stringify(err.response)}`;
+        showToast(`查询失败: ${msg}`, 'error', 8000);
+        statsEl.textContent = '查询失败';
+        loadingPlaceholder.style.display = 'none';
+        noResults.style.display = 'block';
+        noResults.querySelector('.sub').textContent = `⚠️ ${msg}`;
+      } finally {
+        searchBtn.disabled = false;
+        searchBtn.textContent = '🔍 查询';
+      }
+    }
+
+    function renderResults(instances) {
+      resultsContainer.innerHTML = '';
+      instances.forEach(inst => {
+        const card = document.createElement('div');
+        card.className = `result-card ${inst.status || 'unknown'}`;
+        const header = document.createElement('div');
+        header.className = 'card-header';
+        const title = document.createElement('div');
+        title.className = 'card-title';
+        title.textContent = inst.name || '未命名';
+        const uuidSpan = document.createElement('span');
+        uuidSpan.className = 'uuid';
+        uuidSpan.textContent = inst.uuid || '';
+        title.appendChild(uuidSpan);
+        header.appendChild(title);
+        const statusBadge = document.createElement('span');
+        statusBadge.innerHTML = getStatusBadge(inst.status);
+        header.appendChild(statusBadge);
+        card.appendChild(header);
+
+        const body = document.createElement('div');
+        body.className = 'card-body';
+        const fields = [
+          { label: '状态', value: inst.status || '未知' },
+          { label: 'GPU 规格', value: getSpecDisplay(inst.gpu_spec_uuid) },
+          { label: '地区', value: inst.region_name || inst.region_sign || '-' },
+          { label: 'UUID', value: inst.uuid || '-', monospace: true },
+        ];
+        fields.forEach(f => {
+          const div = document.createElement('div');
+          div.className = 'field';
+          const label = document.createElement('span');
+          label.className = 'label';
+          label.textContent = f.label;
+          const value = document.createElement('span');
+          value.className = 'value';
+          if (f.monospace) { value.style.fontFamily = 'monospace';
+            value.style.fontSize = '13px';
+            value.style.wordBreak = 'break-all'; }
+          value.textContent = f.value;
+          div.appendChild(label);
+          div.appendChild(value);
+          body.appendChild(div);
+        });
+        card.appendChild(body);
+
+        const actions = document.createElement('div');
+        actions.className = 'card-actions';
+        const isRunning = inst.status === 'running';
+        const isStopped = inst.status === 'stopped';
+        const isTransition = inst.status === 'starting' || inst.status === 'stopping';
+
+        const onBtn = document.createElement('button');
+        onBtn.className = 'btn btn-success btn-sm';
+        onBtn.textContent = '▶ 开机';
+        onBtn.disabled = !(isStopped || (!isRunning && !isTransition));
+        if (!onBtn.disabled) {
+          onBtn.addEventListener('click', () => { currentInstance = inst;
+            openPowerModal(inst); });
+        }
+        actions.appendChild(onBtn);
+
+        const offBtn = document.createElement('button');
+        offBtn.className = 'btn btn-danger btn-sm';
+        offBtn.textContent = '⏹ 关机';
+        offBtn.disabled = !isRunning;
+        if (!offBtn.disabled) {
+          offBtn.addEventListener('click', async () => {
+            offBtn.disabled = true;
+            offBtn.textContent = '⏳ 关机中...';
+            try {
+              await powerOff(inst.uuid);
+              showToast(`实例 ${inst.name || inst.uuid} 关机指令已发送`, 'success');
+              await queryAndRender();
+            } catch (err) {
+              let msg = err.message;
+              if (err.code) msg += ` (code: ${err.code})`;
+              if (err.response) msg += ` 详情: ${JSON.stringify(err.response)}`;
+              showToast(`关机失败: ${msg}`, 'error', 8000);
+              offBtn.disabled = false;
+              offBtn.textContent = '⏹ 关机';
+            }
+          });
+        }
+        actions.appendChild(offBtn);
+
+        const refreshSmall = document.createElement('button');
+        refreshSmall.className = 'btn btn-sm';
+        refreshSmall.textContent = '⟳ 刷新状态';
+        refreshSmall.addEventListener('click', async () => {
+          refreshSmall.disabled = true;
+          refreshSmall.textContent = '⟳ 刷新中...';
+          try { await queryAndRender(); } finally { refreshSmall.disabled = false;
+            refreshSmall.textContent = '⟳ 刷新状态'; }
+        });
+        actions.appendChild(refreshSmall);
+
+        card.appendChild(actions);
+        resultsContainer.appendChild(card);
+      });
+    }
+
+    function openPowerModal(inst) {
+      modalInstanceName.textContent = `实例：${inst.name || inst.uuid}`;
+      const currentSpec = inst.gpu_spec_uuid || '';
+      const allSpecsSet = new Set();
+      allSpecsSet.add('');
+      ALL_KNOWN_SPECS.forEach(spec => allSpecsSet.add(spec));
+      if (currentSpec) allSpecsSet.add(currentSpec);
+      const specIds = Array.from(allSpecsSet).filter(spec => spec !== undefined && spec !== null);
+      specIds.sort((a, b) => {
+        if (a === '') return -1;
+        if (b === '') return 1;
+        const nameA = specDisplayMap[a] || a;
+        const nameB = specDisplayMap[b] || b;
+        return nameA.localeCompare(nameB);
+      });
+      gpuSelect.innerHTML = '';
+      specIds.forEach(id => {
+        const opt = document.createElement('option');
+        opt.value = id;
+        let display;
+        if (id === '') display = '🔄 默认（使用实例原有规格）';
+        else if (specDisplayMap[id]) display = specDisplayMap[id];
+        else display = id;
+        opt.textContent = display;
+        if (id === '') opt.selected = true;
+        gpuSelect.appendChild(opt);
+      });
+      gpuCustom.value = '';
+      modalOverlay.classList.add('active');
+    }
+
+    function closePowerModal() {
+      modalOverlay.classList.remove('active');
+      currentInstance = null;
+      modalConfirm.disabled = false;
+      modalConfirm.textContent = '确认开机';
+    }
+
+    async function confirmPowerOn() {
+      if (!currentInstance) { showToast('未选择实例', 'error');
+        closePowerModal(); return; }
+      let selectedSpec = gpuCustom.value.trim();
+      if (!selectedSpec) selectedSpec = gpuSelect.value;
+      if (selectedSpec === '') selectedSpec = null;
+      modalConfirm.disabled = true;
+      modalConfirm.textContent = '⏳ 开机中...';
+      try {
+        await powerOn(currentInstance.uuid, selectedSpec);
+        const specDisplay = selectedSpec ? (specDisplayMap[selectedSpec] || selectedSpec) :
+          '默认（实例原有规格）';
+        showToast(`实例 ${currentInstance.name || currentInstance.uuid} 开机指令已发送 (规格: ${specDisplay})`,
+          'success');
+        closePowerModal();
+        await queryAndRender();
+      } catch (err) {
+        let msg = err.message;
+        if (err.code) msg += ` (code: ${err.code})`;
+        if (err.response) msg += ` 详情: ${JSON.stringify(err.response)}`;
+        showToast(`开机失败: ${msg}`, 'error', 10000);
+        console.error('开机详细错误:', err);
+        modalConfirm.disabled = false;
+        modalConfirm.textContent = '确认开机';
+      }
+    }
+
+    async function refreshCurrent() {
+      if (!searchInput.value.trim()) {
+        resultsContainer.style.display = 'none';
+        initialEmpty.style.display = 'block';
+        noResults.style.display = 'none';
+        statsEl.textContent = '就绪';
+        return;
+      }
+      await queryAndRender();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const tokenBtn = document.getElementById('autodl-tokenBtn');
+      if (tokenBtn) tokenBtn.addEventListener('click', () => {
+        const cur = getToken();
+        const input = prompt('粘贴 AutoDL API Token\n（只保存在你本机浏览器，不会写入网页、不会上传到任何服务器）\n\n清空后点确定 = 删除已保存的 Token。', cur);
+        if (input === null) return;
+        const v = input.trim();
+        try {
+          if (v) { localStorage.setItem(TOKEN_KEY, v); showToast('Token 已保存到本机浏览器', 'success'); }
+          else { localStorage.removeItem(TOKEN_KEY); showToast('已清除本机保存的 Token', 'info'); }
+        } catch (err) { showToast('浏览器存储不可用：' + err.message, 'error'); }
+        statsEl.textContent = getProxy() ? '代理模式已就绪' : (getToken() ? '就绪' : '未设置Token，点🔑');
+      });
+      const proxyBtn = document.getElementById('autodl-proxyBtn');
+      if (proxyBtn) proxyBtn.addEventListener('click', () => {
+        const p = getProxy() || { url: '', key: '' };
+        const u = prompt(
+          '🛡️ 代理模式 · 第 1 步（共 2 步）：\n\n粘贴 Cloudflare Worker 地址\n例如 https://ai-proxy.xxxxx.workers.dev\n\n' +
+          '开启后：AutoDL Token 和 ComfyUI 服务器地址都存在云端代理里，本机不用再填。\n清空并点确定 = 关闭代理模式。',
+          p.url
+        );
+        if (u === null) return;
+        const v = u.trim().replace(/\/+$/, '');
+        if (!v) {
+          try { localStorage.removeItem(PROXY_URL_KEY); localStorage.removeItem(PROXY_CKEY_KEY); } catch (err) {}
+          showToast('已关闭代理模式', 'info');
+          statsEl.textContent = getToken() ? '就绪' : '未设置Token，点🔑';
+          return;
+        }
+        const k = prompt('🛡️ 代理模式 · 第 2 步（共 2 步）：\n\n输入客户密钥（管理员发给你的那一串）\n没有密钥就直接点确定留空。', p.key || '');
+        if (k === null) return;
+        try {
+          localStorage.setItem(PROXY_URL_KEY, v);
+          localStorage.setItem(PROXY_CKEY_KEY, k.trim());
+          showToast('代理模式已开启 🛡️', 'success');
+        } catch (err) { showToast('浏览器存储不可用：' + err.message, 'error'); }
+        statsEl.textContent = '代理模式已就绪 🛡️';
+      });
+      statsEl.textContent = getProxy() ? '代理模式已就绪 🛡️' : (getToken() ? '就绪' : '未设置Token，点右上角🔑');
+      searchBtn.addEventListener('click', queryAndRender);
+      refreshBtn.addEventListener('click', refreshCurrent);
+      searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault();
+          queryAndRender(); } });
+      modalCancel.addEventListener('click', closePowerModal);
+      modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closePowerModal(); });
+      modalConfirm.addEventListener('click', confirmPowerOn);
+      searchInput.focus();
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get('q');
+      if (q) { searchInput.value = q;
+        queryAndRender(); }
+    });
+  })();
+</script>
+
+<!-- ============================================================ -->
+<!-- 脚本：AI 生成器（增强轮询 + 详细日志）                        -->
+<!-- ============================================================ -->
+<script>
+  (() => {
+    'use strict';
+
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
+
+    // DOM 引用
+    const baseUrlInput = $('#ai-baseUrl');
+    const workflowIdInput = $('#ai-workflowId');
+    const workflowSelect = $('#ai-workflowSelect');
+    const loadConfigBtn = $('#ai-loadConfigBtn');
+    const configStatus = $('#ai-configStatus');
+    const paramBody = $('#ai-paramBody');
+    const paramCount = $('#ai-paramCount');
+    const addParamBtn = $('#ai-addParamBtn');
+    const clearParamsBtn = $('#ai-clearParamsBtn');
+    const generateBtn = $('#ai-generateBtn');
+    const stopBtn = $('#ai-stopBtn');
+    const clearResultBtn = $('#ai-clearResultBtn');
+    const logBox = $('#ai-logBox');
+    const promptIdDisplay = $('#ai-promptIdDisplay');
+    const progressText = $('#ai-progressText');
+    const elapsedTime = $('#ai-elapsedTime');
+    const resultsContainer = $('#ai-resultsContainer');
+    const resultCount = $('#ai-resultCount');
+    const statusDot = $('#ai-statusDot');
+    const statusText = $('#ai-statusText');
+    const pollInterval = $('#ai-pollInterval');
+    const maxPolls = $('#ai-maxPolls');
+    const loadWorkflowsBtn = $('#ai-loadWorkflowsBtn');
+    const settingsBtn = $('#ai-settingsBtn');
+
+    const uploadZoneCompact = $('#ai-uploadZoneCompact');
+    const fileInputCompact = $('#ai-fileInputCompact');
+    const uploadStatusCompact = $('#ai-uploadStatusCompact');
+    const inputFileList = $('#ai-inputFileList');
+    const outputFileList = $('#ai-outputFileList');
+    const inputPreview = $('#ai-inputPreview');
+    const outputPreview = $('#ai-outputPreview');
+    const refreshInputBtn = $('#ai-refreshInputBtn');
+    const refreshOutputBtn = $('#ai-refreshOutputBtn');
+    const inputCountEl = $('#ai-inputCount');
+    const outputCountEl = $('#ai-outputCount');
+    const hiddenFileInput = $('#ai-hiddenFileInput');
+
+    const placeholderProgress = $('#ai-placeholderProgress');
+    const placeholderStatus = $('#ai-placeholderStatus');
+    const placeholderBar = $('#ai-placeholderBar');
+
+    // 状态
+    let params = [];
+    let currentPromptId = null;
+    let pollingTimer = null;
+    let stopPolling = false;
+    let isGenerating = false;
+    let startTime = null;
+    let elapsedTimer = null;
+    let pollCount = 0;
+    let results = [];
+    let pendingUploadRowIndex = -1;
+
+    let inputAssets = [];
+    let outputAssets = [];
+    let selectedInputFile = null;
+    let selectedOutputFile = null;
+    const BASE_KEY = 'ai-baseUrl';
+
+    // 工具函数
+    /* 代理模式：服务器地址由云端 Worker 管理（键名与上方 AutoDL 脚本一致） */
+    function getProxyBase() {
+      try {
+        const u = localStorage.getItem('proxy_url') || '';
+        const k = localStorage.getItem('proxy_key') || '';
+        if (!u) return '';
+        const base = k.trim() ? u.replace(/\/+$/, '') + '/k/' + encodeURIComponent(k.trim()) : u.replace(/\/+$/, '');
+        return base + '/comfy';
+      } catch (e) { return ''; }
+    }
+    function getBaseUrl() {
+      const pb = getProxyBase();
+      if (pb) return pb; /* 代理模式优先，忽略本机填写的地址 */
+      let url = baseUrlInput.value.trim();
+      if (!url) return '';
+      if (url.endsWith('/')) url = url.slice(0, -1);
+      return url;
+    }
+
+    function getWorkflowId() {
+      return workflowIdInput.value.trim() || workflowSelect.value;
+    }
+
+    function setStatus(text, type = 'idle') {
+      statusText.textContent = text;
+      statusDot.className = 'status-dot ' + type;
+    }
+
+    function log(msg, className = '') {
+      const el = document.createElement('span');
+      el.textContent = msg + '\n';
+      if (className) el.className = className;
+      logBox.appendChild(el);
+      logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function clearLog() { logBox.innerHTML = ''; }
+
+    function setPromptIdDisplay(id) {
+      promptIdDisplay.textContent = id ? 'prompt_id: ' + id.slice(0, 16) + '…' : '—';
+    }
+
+    function updateParamCount() { paramCount.textContent = params.length; }
+
+    function formatTime(ms) {
+      const s = Math.floor(ms / 1000);
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      if (m > 0) return `${m}m${sec}s`;
+      return `${sec}s`;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function guessFileType(filename) {
+      if (!filename) return 'file';
+      const ext = filename.split('.').pop().toLowerCase();
+      if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg', 'tiff', 'ico'].includes(ext)) return 'image';
+      if (['mp4', 'webm', 'mov', 'avi', 'mkv', 'flv', 'wmv', 'm4v'].includes(ext)) return 'video';
+      if (['mp3', 'wav', 'flac', 'aac', 'ogg', 'm4a', 'wma'].includes(ext)) return 'audio';
+      if (['json', 'txt', 'csv', 'xml', 'yaml', 'yml', 'log'].includes(ext)) return 'text';
+      return 'file';
+    }
+
+    function formatFileSize(bytes) {
+      if (!bytes || bytes === 0) return '';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    function buildViewUrl(baseUrl, filename, subfolder = '', type = 'output') {
+      if (!baseUrl) return '';
+      if (!filename) return '';
+      if (filename.startsWith('http://') || filename.startsWith('https://')) return filename;
+      if (filename.startsWith('/api/')) return baseUrl + filename;
+      if (type === 'output') {
+        let cleanSub = subfolder || '';
+        if (cleanSub.startsWith('/')) cleanSub = cleanSub.slice(1);
+        const path = cleanSub ? `${cleanSub}/${filename}` : filename;
+        return `${baseUrl}/output/${path}`;
+      }
+      const params = new URLSearchParams();
+      params.append('filename', filename);
+      params.append('type', type || 'output');
+      if (subfolder) params.append('subfolder', subfolder);
+      return `${baseUrl}/api/comfy/view?${params.toString()}`;
+    }
+
+    // ========== 占位生成（64x64 纯黑） ==========
+    function generateImagePlaceholder() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, 64, 64);
+      return canvas.toDataURL('image/png').split(',')[1];
+    }
+
+    function generateAudioPlaceholder() {
+      const sampleRate = 44100;
+      const duration = 1.0;
+      const numSamples = Math.floor(sampleRate * duration);
+      const numChannels = 1;
+      const bitsPerSample = 16;
+      const dataLength = numSamples * numChannels * (bitsPerSample / 8);
+      const buffer = new ArrayBuffer(44 + dataLength);
+      const view = new DataView(buffer);
+      const writeString = (offset, str) => {
+        for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+      };
+      writeString(0, 'RIFF');
+      view.setUint32(4, 36 + dataLength, true);
+      writeString(8, 'WAVE');
+      writeString(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, numChannels, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * numChannels * (bitsPerSample / 8), true);
+      view.setUint16(32, numChannels * (bitsPerSample / 8), true);
+      view.setUint16(34, bitsPerSample, true);
+      writeString(36, 'data');
+      view.setUint32(40, dataLength, true);
+      let offset = 44;
+      for (let i = 0; i < numSamples; i++) { view.setInt16(offset, 0, true);
+        offset += 2; }
+      const blob = new Blob([buffer], { type: 'audio/wav' });
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => { const base64 = reader.result.split(',')[1];
+          resolve(base64); };
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    function generateVideoPlaceholder() {
+      return new Promise((resolve, reject) => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = 64;
+          canvas.height = 64;
+          const ctx = canvas.getContext('2d');
+          const drawFrame = () => {
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, 64, 64);
+          };
+          drawFrame();
+          const stream = canvas.captureStream(10);
+          const recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8',
+            videoBitsPerSecond: 200000 });
+          const chunks = [];
+          recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+          recorder.onstop = () => {
+            const blob = new Blob(chunks, { type: 'video/webm' });
+            const reader = new FileReader();
+            reader.onload = () => { const base64 = reader.result.split(',')[1];
+              resolve(base64); };
+            reader.onerror = () => reject(new Error('读取视频数据失败'));
+            reader.readAsDataURL(blob);
+          };
+          recorder.onerror = (e) => reject(new Error('MediaRecorder 错误: ' + (e.error || '未知')));
+          recorder.start(200);
+          let frameCount = 0;
+          const interval = setInterval(() => {
+            if (recorder.state === 'inactive') { clearInterval(interval); return; }
+            drawFrame();
+            frameCount++;
+          }, 100);
+          setTimeout(() => {
+            clearInterval(interval);
+            if (recorder.state === 'recording') recorder.stop();
+          }, 1200);
+          setTimeout(() => {
+            if (recorder.state === 'recording') { try { recorder.stop(); } catch (e) {} }
+            reject(new Error('视频生成超时'));
+          }, 5000);
+        } catch (err) { reject(err); }
+      });
+    }
+
+    function detectPlaceholderType(paramKey) {
+      const lower = paramKey.toLowerCase();
+      if (lower.includes('audio') || lower.includes('sound') || lower.includes('voice') ||
+        lower.includes('music') || lower.includes('speech')) return 'audio';
+      if (lower.includes('video') || lower.includes('movie') || lower.includes('clip') ||
+        lower.includes('film') || lower.includes('mp4') || lower.includes('webm')) return 'video';
+      return 'image';
+    }
+
+    async function generatePlaceholderData(type) {
+      if (type === 'image') return generateImagePlaceholder();
+      if (type === 'audio') return await generateAudioPlaceholder();
+      if (type === 'video') {
+        try { return await generateVideoPlaceholder(); } catch (err) {
+          console.warn('视频占位生成失败，回退图片占位:', err);
+          log(`⚠️ 视频占位生成失败 (${err.message})，使用图片占位替代`, 'warn');
+          return generateImagePlaceholder();
+        }
+      }
+      return generateImagePlaceholder();
+    }
+
+    function getPlaceholderExt(type) {
+      if (type === 'audio') return 'wav';
+      if (type === 'video') return 'webm';
+      return 'png';
+    }
+
+    async function uploadPlaceholderFile(base64Data, filename, baseUrl) {
+      if (!baseUrl) throw new Error('BASE URL 未设置');
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) byteNumbers[i] = byteCharacters.charCodeAt(i);
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray]);
+      const formData = new FormData();
+      formData.append('file', blob, filename);
+      formData.append('overwrite', 'true');
+      const resp = await fetch(`${baseUrl}/api/comfy/upload/file`, { method: 'POST', body: formData });
+      if (!resp.ok) throw new Error(`上传失败 HTTP ${resp.status}`);
+      const data = await resp.json();
+      if (!data.name) throw new Error('上传响应缺少 name 字段');
+      return data.name;
+    }
+
+    async function fillMissingFileParams(baseUrl, paramsArray, progressCallback) {
+      const total = paramsArray.filter(p => p.type === 'file' && (!p.value || p.value === '')).length;
+      if (total === 0) return;
+      let completed = 0;
+      if (progressCallback) progressCallback(`⏳ 生成占位文件 (0/${total})...`, 0);
+      for (let i = 0; i < paramsArray.length; i++) {
+        const p = paramsArray[i];
+        if (p.type !== 'file') continue;
+        if (p.value && p.value !== '') continue;
+        const type = detectPlaceholderType(p.key);
+        try {
+          const base64Data = await generatePlaceholderData(type);
+          const ext = getPlaceholderExt(type);
+          const timestamp = Date.now();
+          const rand = Math.random().toString(36).substring(2, 6);
+          const filename = `placeholder_${type}_${timestamp}_${rand}.${ext}`;
+          const uploadedName = await uploadPlaceholderFile(base64Data, filename, baseUrl);
+          p.value = uploadedName;
+          completed++;
+          if (progressCallback) {
+            progressCallback(`✅ 已生成 ${type} 占位: ${uploadedName} (${completed}/${total})`, (completed / total) *
+              100);
+          }
+          log(`📎 自动生成 ${type} 占位: ${uploadedName}`, 'ok');
+        } catch (err) {
+          log(`❌ 生成 ${type} 占位失败 (${p.key}): ${err.message}`, 'err');
+          if (progressCallback) {
+            progressCallback(`⚠️ ${p.key} 占位生成失败: ${err.message}`, (completed / total) * 100);
+          }
+        }
+      }
+    }
+
+    // ========== 文件列表（完整实现） ==========
+    async function loadInputAssets() {
+      const url = getBaseUrl();
+      if (!url) {
+        inputFileList.innerHTML =
+          `<div class="empty-files"><span class="icon">⚠️</span>请先设置 BASE URL</div>`;
+        return;
+      }
+      try {
+        const resp = await fetch(`${url}/api/input-assets`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        let list = [];
+        if (data.success && Array.isArray(data.assets)) list = data.assets;
+        else if (Array.isArray(data)) list = data;
+        else list = data.assets || data.files || [];
+        inputAssets = list.map(item => ({
+          name: item.name || item.filename,
+          subfolder: item.subfolder || '',
+          type: item.type || guessFileType(item.name || item.filename),
+          size: item.size || 0
+        }));
+        inputAssets.sort((a, b) => a.name.localeCompare(b.name));
+        renderInputFileList();
+        inputCountEl.textContent = inputAssets.length;
+        log(`📂 加载了 ${inputAssets.length} 个输入文件`, 'ok');
+      } catch (err) {
+        log(`❌ 加载输入文件失败: ${err.message}`, 'err');
+        inputFileList.innerHTML =
+          `<div class="empty-files"><span class="icon">❌</span>加载失败: ${err.message}</div>`;
+      }
+    }
+
+    async function loadOutputAssets() {
+      const url = getBaseUrl();
+      if (!url) {
+        outputFileList.innerHTML =
+          `<div class="empty-files"><span class="icon">⚠️</span>请先设置 BASE URL</div>`;
+        return;
+      }
+      try {
+        const resp = await fetch(`${url}/api/images`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        let list = [];
+        if (Array.isArray(data)) list = data;
+        else if (data.success && Array.isArray(data.assets)) list = data.assets;
+        else if (data.assets && Array.isArray(data.assets)) list = data.assets;
+        else if (data.files && Array.isArray(data.files)) list = data.files;
+        else list = [];
+        outputAssets = list.map(item => {
+          const relativePath = item.relativePath || item.path || item.name || '';
+          const lastSlash = relativePath.lastIndexOf('/');
+          const subfolder = lastSlash >= 0 ? relativePath.substring(0, lastSlash) : '';
+          const name = lastSlash >= 0 ? relativePath.substring(lastSlash + 1) : relativePath;
+          return { name, subfolder, type: item.type || guessFileType(name), size: item.size || 0 };
+        });
+        outputAssets.sort((a, b) => a.name.localeCompare(b.name));
+        renderOutputFileList();
+        outputCountEl.textContent = outputAssets.length;
+        log(`📂 加载了 ${outputAssets.length} 个输出文件`, 'ok');
+      } catch (err) {
+        log(`❌ 加载输出文件失败: ${err.message}`, 'err');
+        outputFileList.innerHTML =
+          `<div class="empty-files"><span class="icon">❌</span>加载失败: ${err.message}</div>`;
+      }
+    }
+
+    function renderInputFileList() {
+      if (inputAssets.length === 0) {
+        inputFileList.innerHTML =
+          `<div class="empty-files"><span class="icon">📭</span>暂无输入文件</div>`;
+        inputPreview.innerHTML = `<span class="placeholder">点击文件预览</span>`;
+        return;
+      }
+      let html = '';
+      inputAssets.forEach((item, idx) => {
+        const isActive = selectedInputFile && selectedInputFile.name === item.name;
+        const sizeStr = formatFileSize(item.size);
+        const viewUrl = buildViewUrl(getBaseUrl(), item.name, item.subfolder, 'input');
+        html += `
+                    <div class="file-item ${isActive ? 'active' : ''}" data-input-idx="${idx}">
+                        <span class="file-name" title="${item.name}">${item.name}</span>
+                        ${sizeStr ? `<span class="file-size">${sizeStr}</span>` : ''}
+                        <a href="${viewUrl}" download="${item.name}" class="file-dl" title="下载">⬇️</a>
+                    </div>
+                `;
+      });
+      inputFileList.innerHTML = html;
+
+      inputFileList.querySelectorAll('.file-item').forEach(el => {
+        el.addEventListener('click', (e) => {
+          if (e.target.closest('.file-dl')) return;
+          const idx = parseInt(el.dataset.inputIdx);
+          if (!isNaN(idx) && idx < inputAssets.length) {
+            selectInputFile(idx);
+          }
+        });
+      });
+
+      if (selectedInputFile) {
+        const idx = inputAssets.findIndex(a => a.name === selectedInputFile.name);
+        if (idx >= 0) {
+          selectInputFile(idx, false);
+        } else {
+          selectedInputFile = null;
+          inputPreview.innerHTML = `<span class="placeholder">点击文件预览</span>`;
+        }
+      }
+    }
+
+    function renderOutputFileList() {
+      if (outputAssets.length === 0) {
+        outputFileList.innerHTML =
+          `<div class="empty-files"><span class="icon">📭</span>暂无输出文件</div>`;
+        outputPreview.innerHTML = `<span class="placeholder">点击文件预览</span>`;
+        return;
+      }
+      let html = '';
+      outputAssets.forEach((item, idx) => {
+        const isActive = selectedOutputFile && selectedOutputFile.name === item.name;
+        const sizeStr = formatFileSize(item.size);
+        const viewUrl = buildViewUrl(getBaseUrl(), item.name, item.subfolder, 'output');
+        html += `
+                    <div class="file-item ${isActive ? 'active' : ''}" data-output-idx="${idx}">
+                        <span class="file-name" title="${item.name}">${item.name}</span>
+                        ${sizeStr ? `<span class="file-size">${sizeStr}</span>` : ''}
+                        <a href="${viewUrl}" download="${item.name}" class="file-dl" title="下载">⬇️</a>
+                    </div>
+                `;
+      });
+      outputFileList.innerHTML = html;
+
+      outputFileList.querySelectorAll('.file-item').forEach(el => {
+        el.addEventListener('click', (e) => {
+          if (e.target.closest('.file-dl')) return;
+          const idx = parseInt(el.dataset.outputIdx);
+          if (!isNaN(idx) && idx < outputAssets.length) {
+            selectOutputFile(idx);
+          }
+        });
+      });
+
+      if (selectedOutputFile) {
+        const idx = outputAssets.findIndex(a => a.name === selectedOutputFile.name);
+        if (idx >= 0) {
+          selectOutputFile(idx, false);
+        } else {
+          selectedOutputFile = null;
+          outputPreview.innerHTML = `<span class="placeholder">点击文件预览</span>`;
+        }
+      }
+    }
+
+    function selectInputFile(idx, scroll = true) {
+      if (idx < 0 || idx >= inputAssets.length) return;
+      const item = inputAssets[idx];
+      selectedInputFile = item;
+      renderInputFileList();
+      if (scroll) {
+        const el = inputFileList.querySelector(`[data-input-idx="${idx}"]`);
+        if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+      showFilePreview(inputPreview, item, 'input');
+    }
+
+    function selectOutputFile(idx, scroll = true) {
+      if (idx < 0 || idx >= outputAssets.length) return;
+      const item = outputAssets[idx];
+      selectedOutputFile = item;
+      renderOutputFileList();
+      if (scroll) {
+        const el = outputFileList.querySelector(`[data-output-idx="${idx}"]`);
+        if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+      showFilePreview(outputPreview, item, 'output');
+    }
+
+    function showFilePreview(container, item, type) {
+      const baseUrl = getBaseUrl();
+      if (!baseUrl) {
+        container.innerHTML = `<span class="placeholder">BASE URL 未设置</span>`;
+        return;
+      }
+      const url = buildViewUrl(baseUrl, item.name, item.subfolder, type);
+      if (!url) {
+        container.innerHTML = `<span class="placeholder">无法生成预览 URL</span>`;
+        return;
+      }
+
+      const fileType = item.type || guessFileType(item.name);
+      const name = item.name;
+
+      let html = '';
+      if (fileType === 'image') {
+        html =
+          `<img src="${url}" alt="${name}" onerror="this.parentElement.innerHTML='<span class=\\'placeholder\\'>加载失败</span>'" />`;
+      } else if (fileType === 'video') {
+        html = `<video controls preload="metadata" style="max-height:160px;width:100%;" onerror="this.parentElement.innerHTML='<span class=\\'placeholder\\'>加载失败</span>'">
+                        <source src="${url}" type="video/mp4" />您的浏览器不支持视频
+                    </video>`;
+      } else if (fileType === 'audio') {
+        html = `<audio controls preload="metadata" style="width:100%;" onerror="this.parentElement.innerHTML='<span class=\\'placeholder\\'>加载失败</span>'">
+                        <source src="${url}" type="audio/mpeg" />您的浏览器不支持音频
+                    </audio>`;
+      } else if (fileType === 'text') {
+        fetch(url)
+          .then(res => res.text())
+          .then(text => {
+            const previewText = text.length > 500 ? text.slice(0, 500) + '…' : text;
+            container.innerHTML =
+              `<div style="width:100%;max-height:160px;overflow:auto;font-family:var(--mono);font-size:12px;white-space:pre-wrap;word-break:break-all;background:var(--surface-2);padding:8px;border-radius:6px;">${escapeHtml(previewText)}</div>`;
+          })
+          .catch(() => {
+            container.innerHTML =
+              `<span class="placeholder">📄 ${name} (文本文件，点击下载查看完整内容)</span>`;
+          });
+        return;
+      } else {
+        html = `<span class="placeholder">📄 ${name} (不支持预览，请下载查看)</span>`;
+      }
+      container.innerHTML = html;
+    }
+
+    // ========== 文件上传 ==========
+    async function uploadFileToInput(file) {
+      const url = getBaseUrl();
+      if (!url) throw new Error('请填写 BASE URL');
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('overwrite', 'true');
+
+      const resp = await fetch(`${url}/api/comfy/upload/file`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      if (!data.name) throw new Error('上传响应缺少 name 字段');
+      return data;
+    }
+
+    async function handleFileUpload(file) {
+      uploadStatusCompact.textContent = '⏳ 上传中…';
+      try {
+        const data = await uploadFileToInput(file);
+        uploadStatusCompact.textContent = `✅ 已上传: ${data.name}`;
+        log(`📎 上传成功: ${data.name}`, 'ok');
+        await loadInputAssets();
+        const idx = inputAssets.findIndex(a => a.name === data.name);
+        if (idx >= 0) {
+          selectInputFile(idx);
+        }
+      } catch (err) {
+        uploadStatusCompact.textContent = `❌ 失败: ${err.message}`;
+        log(`❌ 上传失败: ${err.message}`, 'err');
+        alert('上传失败: ' + err.message);
+      }
+    }
+
+    // ========== 参数渲染 ==========
+    function renderParams() {
+      if (params.length === 0) {
+        paramBody.innerHTML = `
+                    <tr><td colspan="4" style="text-align:center;color:var(--text-3);padding:16px 0;font-size:13px;">
+                        ⚡ 暂无参数，请选择工作流并点击「加载参数」或手动添加
+                    </td></tr>
+                `;
+        updateParamCount();
+        return;
+      }
+
+      let html = '';
+      params.forEach((p, idx) => {
+        const val = p.value || '';
+        const isTextType = p.type === 'text';
+        const valInput = isTextType ?
+          `<textarea class="val-textarea" placeholder="输入文本内容" data-param="value" data-idx="${idx}" style="flex:1;min-width:80px;width:100%;">${escapeHtml(val)}</textarea>` :
+          `<input class="val-input" type="text" value="${escapeHtml(val)}" placeholder="值或文件名" data-param="value" data-idx="${idx}" style="flex:1;min-width:80px;" />`;
+
+        html += `
+                    <tr data-index="${idx}">
+                        <td>
+                            <input class="key-input" type="text" value="${escapeHtml(p.key)}"
+                                placeholder="例如 187:text" data-param="key" data-idx="${idx}" />
+                        </td>
+                        <td>
+                            <select class="type-select" data-param="type" data-idx="${idx}">
+                                <option value="text" ${p.type==='text'?'selected':''}>文本</option>
+                                <option value="number" ${p.type==='number'?'selected':''}>数字</option>
+                                <option value="file" ${p.type==='file'?'selected':''}>文件</option>
+                                <option value="json" ${p.type==='json'?'selected':''}>JSON</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div style="display:flex;gap:6px;align-items:${isTextType ? 'stretch' : 'center'};flex-wrap:wrap;">
+                                ${valInput}
+                                ${p.type === 'file' ? `
+                                    <select class="asset-select-small" data-asset-select="${idx}" style="width:120px;font-size:12px;padding:4px;">
+                                        <option value="">选择已上传</option>
+                                    </select>
+                                    <button class="file-btn" data-upload="${idx}">📎 上传</button>
+                                ` : ''}
+                            </div>
+                        </td>
+                        <td style="text-align:right;">
+                            <button class="del-btn" data-del="${idx}" title="删除">✕</button>
+                        </td>
+                    </tr>
+                `;
+      });
+      paramBody.innerHTML = html;
+      updateParamCount();
+
+      // 文件类型下拉框
+      const selects = paramBody.querySelectorAll('[data-asset-select]');
+      selects.forEach(sel => {
+        const idx = parseInt(sel.dataset.assetSelect);
+        sel.innerHTML = '<option value="">选择已上传</option>';
+        inputAssets.forEach(a => {
+          const opt = document.createElement('option');
+          opt.value = a.name;
+          opt.textContent = a.name;
+          sel.appendChild(opt);
+        });
+        sel.selectedIndex = 0;
+        sel.addEventListener('change', (e) => {
+          const selected = e.target.value;
+          const idx2 = parseInt(e.target.dataset.assetSelect);
+          if (idx2 < params.length) {
+            params[idx2].value = selected;
+            const row = paramBody.querySelector(`tr[data-index="${idx2}"]`);
+            if (row) {
+              const valInput = row.querySelector('[data-param="value"]');
+              if (valInput) {
+                if (valInput.tagName === 'TEXTAREA') {
+                  valInput.value = selected;
+                } else {
+                  valInput.value = selected;
+                }
+              }
+            }
+          }
+          e.target.selectedIndex = 0;
+        });
+      });
+
+      // 值变更
+      paramBody.querySelectorAll('[data-param="value"]').forEach(el => {
+        const changeHandler = (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          params[idx].value = e.target.value;
+          const row = paramBody.querySelector(`tr[data-index="${idx}"]`);
+          if (row) {
+            const sel = row.querySelector('[data-asset-select]');
+            if (sel) sel.selectedIndex = 0;
+          }
+        };
+        el.addEventListener('change', changeHandler);
+        el.addEventListener('input', (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          params[idx].value = e.target.value;
+          const row = paramBody.querySelector(`tr[data-index="${idx}"]`);
+          if (row) {
+            const sel = row.querySelector('[data-asset-select]');
+            if (sel) sel.selectedIndex = 0;
+          }
+        });
+      });
+
+      // Key 变更
+      paramBody.querySelectorAll('[data-param="key"]').forEach(el => {
+        el.addEventListener('change', (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          params[idx].key = e.target.value;
+        });
+      });
+
+      // 类型切换
+      paramBody.querySelectorAll('[data-param="type"]').forEach(el => {
+        el.addEventListener('change', (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          params[idx].type = e.target.value;
+          renderParams();
+          const row = paramBody.querySelector(`tr[data-index="${idx}"]`);
+          if (row) {
+            const input = row.querySelector('[data-param="value"]');
+            if (input) setTimeout(() => input.focus(), 50);
+          }
+        });
+      });
+
+      // 删除
+      paramBody.querySelectorAll('[data-del]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          const idx = parseInt(e.target.dataset.del);
+          params.splice(idx, 1);
+          renderParams();
+        });
+      });
+
+      // 文件上传按钮（参数行）
+      paramBody.querySelectorAll('[data-upload]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          const idx = parseInt(e.target.dataset.upload);
+          pendingUploadRowIndex = idx;
+          hiddenFileInput.click();
+        });
+      });
+    }
+
+    // ========== 工作流加载 ==========
+    async function loadWorkflows() {
+      const url = getBaseUrl();
+      if (!url) { alert('请先填写 BASE URL'); return; }
+      try {
+        const resp = await fetch(`${url}/api/workflow/list`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.error || '未知错误');
+        const list = data.workflows || [];
+        workflowSelect.innerHTML = '<option value="">— 选择已保存 —</option>';
+        list.forEach(w => {
+          const opt = document.createElement('option');
+          opt.value = w.id;
+          opt.textContent = `${w.name} (运行${w.run_count||0}次)`;
+          workflowSelect.appendChild(opt);
+        });
+        log(`✅ 加载了 ${list.length} 个工作流`, 'ok');
+        const current = getWorkflowId();
+        if (current) {
+          const opts = workflowSelect.options;
+          for (let i = 0; i < opts.length; i++) { if (opts[i].value === current) { workflowSelect.value = current; break; } }
+          loadWorkflowConfig(current);
+        }
+      } catch (err) {
+        log(`❌ 加载工作流失败: ${err.message}`, 'err');
+        alert('加载工作流列表失败: ' + err.message);
+      }
+    }
+
+    // ================================================================
+    // 修改点：加载工作流后，对文件类型参数自动填入占位文件名
+    // 修复：当 formValues 中值为 null 时，不转为 "null" 字符串
+    // ================================================================
+    async function loadWorkflowConfig(workflowId) {
+      if (!workflowId) { configStatus.textContent = '未指定工作流 ID';
+        configStatus.style.color = 'var(--text-3)'; return; }
+      const baseUrl = getBaseUrl();
+      if (!baseUrl) { alert('请填写 BASE URL'); return; }
+      configStatus.textContent = '加载中…';
+      configStatus.style.color = 'var(--warning)';
+      try {
+        const resp = await fetch(`${baseUrl}/api/workflow/config/${encodeURIComponent(workflowId)}`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.error || '未知错误');
+        const apiConfig = data.api_config || {};
+        const enabledParams = apiConfig.enabledParams || {};
+        const formValues = apiConfig.formValues || {};
+        let paramKeys = Object.keys(enabledParams).filter(k => enabledParams[k] === true);
+        if (paramKeys.length === 0) {
+          const template = data.workflow_template || {};
+          for (const [nodeId, node] of Object.entries(template)) {
+            if (node.inputs) {
+              for (const [field, value] of Object.entries(node.inputs)) {
+                const key = `${nodeId}:${field}`;
+                if (!enabledParams.hasOwnProperty(key) || enabledParams[key] !== false) {
+                  if (!paramKeys.includes(key)) paramKeys.push(key);
+                }
+              }
+            }
+          }
+        }
+        if (paramKeys.length === 0) {
+          configStatus.textContent = '该工作流没有可配置参数';
+          configStatus.style.color = 'var(--text-3)';
+          params = [];
+          renderParams();
+          return;
+        }
+        const newParams = paramKeys.map(key => {
+          let type = 'text';
+          const lowerKey = key.toLowerCase();
+          if (lowerKey.includes('seed') || lowerKey.includes('width') || lowerKey.includes('height') ||
+            lowerKey.includes('frame') || lowerKey.includes('value') || lowerKey.includes('steps') ||
+            lowerKey.includes('cfg')) type = 'number';
+          else if (lowerKey.includes('image') || lowerKey.includes('video') || lowerKey.includes('audio') ||
+            lowerKey.includes('file') || lowerKey.includes('mask') || lowerKey.includes('input')) type = 'file';
+          else if (lowerKey.includes('json') || lowerKey.includes('data')) type = 'json';
+          // 修复：只有当值不是 undefined、null 且非空时才转为字符串
+          let value = '';
+          const rawVal = formValues[key];
+          if (rawVal !== undefined && rawVal !== null && rawVal !== '') {
+            value = String(rawVal);
+          }
+          return { key, type, value };
+        });
+        const seen = new Set();
+        const uniqueParams = newParams.filter(p => { if (seen.has(p.key)) return false;
+          seen.add(p.key); return true; });
+        params = uniqueParams;
+
+        // ===== 自动为空的文件参数填入占位文件名 =====
+        for (const p of params) {
+          if (p.type === 'file' && !p.value) {
+            const type = detectPlaceholderType(p.key);
+            if (type === 'audio') {
+              p.value = 'XXX无声1.wav';
+            } else {
+              p.value = 'XXX无图1.png';
+            }
+          }
+        }
+        // =============================================
+
+        renderParams();
+        configStatus.textContent = `已加载 ${params.length} 个参数`;
+        configStatus.style.color = 'var(--success)';
+        log(`📥 从工作流 "${workflowId}" 加载了 ${params.length} 个参数`, 'ok');
+      } catch (err) {
+        configStatus.textContent = '加载失败: ' + err.message;
+        configStatus.style.color = 'var(--error)';
+        log(`❌ 加载工作流配置失败: ${err.message}`, 'err');
+        alert('加载工作流配置失败: ' + err.message);
+      }
+    }
+
+    function addParam(key = '', type = 'text', value = '') {
+      params.push({ key, type, value });
+      renderParams();
+      const rows = paramBody.querySelectorAll('tr');
+      if (rows.length > 0) { rows[rows.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const inp = rows[rows.length - 1].querySelector('[data-param="key"]');
+        if (inp) setTimeout(() => inp.focus(), 100); }
+    }
+
+    function clearParams() {
+      if (params.length === 0) return;
+      if (!confirm('确定清空所有参数吗？')) return;
+      params = [];
+      renderParams();
+      configStatus.textContent = '已清空';
+      configStatus.style.color = 'var(--text-3)';
+    }
+
+    // ========== 增强的结果解析（从 history 提取所有输出文件） ==========
+    function extractFilesFromHistory(history) {
+      if (!history) return [];
+      let files = [];
+      // 遍历 outputs
+      const outputs = history.outputs || {};
+      for (const nodeId of Object.keys(outputs)) {
+        const nodeOutput = outputs[nodeId];
+        // 常见输出类型: images, gifs, videos, audio, files, texts
+        const candidates = ['images', 'gifs', 'videos', 'audio', 'files', 'texts'];
+        for (const key of candidates) {
+          if (Array.isArray(nodeOutput[key])) {
+            for (const item of nodeOutput[key]) {
+              if (item.filename || item.name) {
+                files.push({
+                  filename: item.filename || item.name,
+                  subfolder: item.subfolder || '',
+                  type: item.type || guessFileType(item.filename || item.name),
+                  url: item.url || '',
+                });
+              }
+            }
+          }
+        }
+        // 也可能直接是字符串数组（如某些自定义节点）
+        if (Array.isArray(nodeOutput)) {
+          for (const item of nodeOutput) {
+            if (typeof item === 'string') {
+              files.push({ filename: item, subfolder: '', type: guessFileType(item), url: '' });
+            } else if (item.filename || item.name) {
+              files.push({
+                filename: item.filename || item.name,
+                subfolder: item.subfolder || '',
+                type: item.type || guessFileType(item.filename || item.name),
+                url: item.url || '',
+              });
+            }
+          }
+        }
+      }
+      return files;
+    }
+
+    function normalizeResults(raw) {
+      if (!raw) return [];
+      // 如果是数组，直接处理
+      if (Array.isArray(raw)) {
+        return raw.map(item => normalizeItem(item));
+      }
+      // 如果是对象，尝试从 history 中提取
+      if (raw.history) {
+        const historyFiles = extractFilesFromHistory(raw.history);
+        if (historyFiles.length > 0) return historyFiles;
+      }
+      // 常见字段
+      const candidates = ['files', 'items', 'outputs', 'images', 'videos', 'audio', 'results', 'data'];
+      for (const key of candidates) {
+        if (raw[key] && Array.isArray(raw[key])) {
+          return raw[key].map(item => normalizeItem(item));
+        }
+      }
+      // 如果都没有，返回空
+      return [];
+    }
+
+    function normalizeItem(item) {
+      if (typeof item === 'string') return { filename: item, type: guessFileType(item), url: '', subfolder: '' };
+      if (!item || typeof item !== 'object') return { filename: 'unknown', type: 'file', url: '', subfolder: '' };
+      const filename = item.filename || item.name || item.file || item.file_name || '';
+      const url = item.url || item.preview_url || item.file_url || '';
+      const type = item.type || item.mime_type || guessFileType(filename);
+      const subfolder = item.subfolder || item.folder || '';
+      return { filename, url, type, subfolder };
+    }
+
+    // ========== 显示结果 ==========
+    function displayResults(resultsData, baseUrl) {
+      const normalized = normalizeResults(resultsData);
+      results = normalized;
+      resultCount.textContent = normalized.length + ' 个文件';
+      if (normalized.length === 0) {
+        resultsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon">📭</span>
+                        <p>任务已完成，但没有生成任何文件</p>
+                        <p style="font-size:12px;color:var(--text-3);margin-top:4px;">可能工作流没有输出节点，或输出被清空</p>
+                    </div>
+                `;
+        log(`📭 任务完成但无结果文件`, 'warn');
+        loadOutputAssets();
+        return;
+      }
+      log(`🖼️ 展示 ${normalized.length} 个结果文件`, 'ok');
+      renderResults(normalized, baseUrl);
+      loadOutputAssets();
+    }
+
+    function renderResults(items, baseUrl) {
+      if (!items || items.length === 0) { resultsContainer.innerHTML =
+          `<div class="empty-state"><span class="icon">📭</span><p>暂无结果</p></div>`; return; }
+      let html = '<div class="results-grid">';
+      for (const item of items) {
+        const filename = item.filename || 'file';
+        const type = item.type || guessFileType(filename);
+        const subfolder = item.subfolder || '';
+        let fullUrl = item.url || '';
+        if (!fullUrl || fullUrl === '') fullUrl = buildViewUrl(baseUrl, filename, subfolder, 'output');
+        else if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
+          if (fullUrl.startsWith('/')) fullUrl = baseUrl + fullUrl;
+          else fullUrl = baseUrl + '/' + fullUrl;
+        }
+        let mediaHtml = '';
+        const tag = `<span class="type-tag">${type}</span>`;
+        if (type === 'image') mediaHtml =
+          `<img src="${fullUrl}" alt="${filename}" loading="lazy" onerror="this.parentElement.innerHTML='<span style=\\'color:#fff;font-size:14px;\\'>⚠️ 加载失败</span>'" />`;
+        else if (type === 'video') mediaHtml =
+          `<video controls preload="metadata" onerror="this.parentElement.innerHTML='<span style=\\'color:#fff;font-size:14px;\\'>⚠️ 加载失败</span>'"><source src="${fullUrl}" type="video/mp4" />您的浏览器不支持视频播放</video>`;
+        else if (type === 'audio') mediaHtml =
+          `<audio controls preload="metadata" onerror="this.parentElement.innerHTML='<span style=\\'color:#fff;font-size:14px;\\'>⚠️ 加载失败</span>'"><source src="${fullUrl}" type="audio/mpeg" />您的浏览器不支持音频播放</audio>`;
+        else if (type === 'text') mediaHtml =
+          `<div style="color:#fff;font-size:14px;text-align:center;padding:20px;background:#1a1a2e;">📄 ${filename}</div>`;
+        else mediaHtml =
+          `<div style="color:#fff;font-size:14px;text-align:center;padding:20px;background:#1a1a2e;">📎 ${type}</div>`;
+        html += `<div class="result-item"><div class="media-wrap">${mediaHtml}${tag}</div><div class="info"><span class="filename" title="${filename}">${filename}</span><a href="${fullUrl}" target="_blank" class="dl-link" download="${filename}" title="下载">⬇️</a></div></div>`;
+      }
+      html += '</div>';
+      resultsContainer.innerHTML = html;
+      resultsContainer.scrollTop = 0;
+    }
+
+    // ========== 生成与轮询（增强版） ==========
+    async function runGenerate() {
+      if (isGenerating) return;
+      const baseUrl = getBaseUrl();
+      if (!baseUrl) { alert('请填写 BASE URL'); return; }
+      const workflowId = getWorkflowId();
+      if (!workflowId) { alert('请填写工作流 ID'); return; }
+
+      // 补全缺失的文件参数
+      const fileParams = params.filter(p => p.type === 'file' && (!p.value || p.value === ''));
+      if (fileParams.length > 0) {
+        placeholderProgress.classList.add('active');
+        placeholderStatus.textContent = `⏳ 正在生成 ${fileParams.length} 个占位文件...`;
+        placeholderBar.style.width = '0%';
+        try {
+          await fillMissingFileParams(baseUrl, params, (msg, progress) => {
+            placeholderStatus.textContent = msg;
+            placeholderBar.style.width = (progress || 0) + '%';
+          });
+        } catch (err) {
+          log(`❌ 占位生成过程出错: ${err.message}`, 'err');
+          alert('占位生成失败: ' + err.message);
+          placeholderProgress.classList.remove('active');
+          return;
+        }
+        placeholderProgress.classList.remove('active');
+      }
+
+      // 收集参数
+      const inputValues = {};
+      let hasValue = false;
+      for (const p of params) {
+        let key = p.key.trim();
+        if (!key) continue;
+        let val = p.value;
+        if (val !== undefined && val !== null && val !== '') {
+          if (p.type === 'number') val = parseFloat(val);
+          if (p.type === 'json') { try { val = JSON.parse(val); } catch (e) { val = val; } }
+          inputValues[key] = val;
+          hasValue = true;
+        }
+      }
+      if (!hasValue) {
+        if (!confirm('没有填写任何参数，确定继续吗？')) { placeholderProgress.classList.remove('active'); return; }
+      }
+
+      // 提交
+      clearResults();
+      clearLog();
+      setPromptIdDisplay(null);
+      currentPromptId = null;
+      stopPolling = false;
+      pollCount = 0;
+      isGenerating = true;
+      generateBtn.disabled = true;
+      stopBtn.disabled = false;
+      setStatus('提交中…', 'running');
+      log(`🚀 提交生成任务: ${workflowId}`, 'highlight');
+      log(`📦 参数: ${JSON.stringify(inputValues, null, 2)}`, '');
+
+      const payload = { workflow_id: workflowId, input_values: inputValues, client_id: 'web-generator-' + Date
+          .now() };
+      try {
+        const resp = await fetch(`${baseUrl}/api/workflow/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        if (!data.success) throw new Error(data.error || '提交失败');
+        currentPromptId = data.prompt_id;
+        setPromptIdDisplay(currentPromptId);
+        log(`✅ 已提交，prompt_id: ${currentPromptId}`, 'ok');
+        setStatus('生成中…', 'running');
+        startPolling(baseUrl, currentPromptId);
+      } catch (err) {
+        log(`❌ 提交失败: ${err.message}`, 'err');
+        setStatus('错误', 'error');
+        isGenerating = false;
+        generateBtn.disabled = false;
+        stopBtn.disabled = true;
+        placeholderProgress.classList.remove('active');
+      }
+    }
+
+    function startPolling(baseUrl, promptId) {
+      stopPolling = false;
+      pollCount = 0;
+      startTime = Date.now();
+      if (elapsedTimer) clearInterval(elapsedTimer);
+      elapsedTimer = setInterval(() => { if (startTime) elapsedTime.textContent = '⏱ ' + formatTime(Date.now() -
+          startTime); }, 1000);
+
+      const maxPollsVal = parseInt(maxPolls.value) || 1000;
+      const intervalVal = parseInt(pollInterval.value) || 5000;
+      log(`🔄 开始轮询 (间隔 ${intervalVal}ms, 最大 ${maxPollsVal} 次)`, 'warn');
+
+      function doPoll() {
+        if (stopPolling) { log('⏹ 轮询已停止', 'warn');
+          finishPolling(); return; }
+        pollCount++;
+        if (pollCount > maxPollsVal) { log(`⏱ 达到最大轮询次数 (${maxPollsVal})，停止轮询`, 'warn');
+          setStatus('超时', 'error');
+          finishPolling(); return; }
+
+        fetch(`${baseUrl}/api/workflow/result?prompt_id=${promptId}`)
+          .then(r => r.json())
+          .then(data => {
+            if (stopPolling) return;
+
+            // 打印完整的响应到控制台，方便调试
+            console.log('[POLL] 完整响应:', data);
+
+            if (!data.success) {
+              log(`⚠️ 查询异常: ${data.error || '未知错误'}`, 'err');
+              pollingTimer = setTimeout(doPoll, intervalVal);
+              return;
+            }
+            if (data.error) {
+              log(`❌ 工作流执行错误: ${data.error}`, 'err');
+            }
+            if (data.history && data.history.error) {
+              log(`❌ 历史错误: ${data.history.error}`, 'err');
+            }
+            if (data.message) {
+              log(`📝 服务端消息: ${data.message}`, 'warn');
+            }
+
+            const pending = data.pending;
+            // 尝试从多个来源提取结果
+            let rawResults = [];
+            if (data.results) rawResults = data.results;
+            else if (data.files) rawResults = data.files;
+            else if (data.outputs) rawResults = data.outputs;
+            else if (data.history) rawResults = data.history; // 将 history 传给 normalizeResults 处理
+            else if (data.images) rawResults = data.images;
+            else if (data.videos) rawResults = data.videos;
+            else rawResults = [];
+
+            const normalized = normalizeResults({ history: data.history, results: rawResults });
+            const resultCount = normalized.length;
+
+            const statusMsg =
+              `轮询 #${pollCount} · pending=${pending} · 结果数=${resultCount}`;
+            progressText.textContent = statusMsg;
+            log(`📡 ${statusMsg}`, '');
+
+            if (pollCount === 1) {
+              console.log('[DEBUG] 原始 rawResults:', rawResults);
+              console.log('[DEBUG] 规范化后:', normalized);
+            }
+
+            if (!pending) {
+              if (resultCount > 0) {
+                log(`✅ 任务完成！获得 ${resultCount} 个文件`, 'ok');
+                setStatus('完成', 'done');
+                displayResults({ history: data.history, results: rawResults }, baseUrl);
+              } else {
+                log(`⚠️ 任务已完成但无结果`, 'err');
+                setStatus('无结果', 'error');
+                displayResults({}, baseUrl);
+                if (data.history) {
+                  log(`📋 历史数据: ${JSON.stringify(data.history, null, 2)}`, 'warn');
+                }
+                if (data.error) {
+                  log(`❌ 错误详情: ${data.error}`, 'err');
+                }
+                // 如果没有历史，打印完整 data
+                if (!data.history && !data.error) {
+                  log(`📋 完整响应: ${JSON.stringify(data, null, 2)}`, 'warn');
+                }
+              }
+              finishPolling();
+              return;
+            }
+
+            if (resultCount > 0) {
+              log(`📊 已有 ${resultCount} 个中间结果，等待完成…`, 'warn');
+            }
+
+            pollingTimer = setTimeout(doPoll, intervalVal);
+          })
+          .catch(err => {
+            if (stopPolling) return;
+            log(`❌ 轮询请求失败: ${err.message}`, 'err');
+            pollingTimer = setTimeout(doPoll, intervalVal * 2);
+          });
+      }
+      pollingTimer = setTimeout(doPoll, 500);
+    }
+
+    function finishPolling() {
+      if (pollingTimer) { clearTimeout(pollingTimer);
+        pollingTimer = null; }
+      if (elapsedTimer) { clearInterval(elapsedTimer);
+        elapsedTimer = null; }
+      isGenerating = false;
+      generateBtn.disabled = false;
+      stopBtn.disabled = true;
+      if (statusDot.className !== 'status-dot done' && statusDot.className !== 'status-dot error') {
+        setStatus('就绪', 'idle');
+      }
+      progressText.textContent = '就绪';
+    }
+
+    function stopPollingManually() {
+      stopPolling = true;
+      if (pollingTimer) { clearTimeout(pollingTimer);
+        pollingTimer = null; }
+      if (elapsedTimer) { clearInterval(elapsedTimer);
+        elapsedTimer = null; }
+      isGenerating = false;
+      generateBtn.disabled = false;
+      stopBtn.disabled = true;
+      setStatus('已停止', 'idle');
+      log('⏹ 用户停止了轮询', 'warn');
+      progressText.textContent = '已停止';
+    }
+
+    function clearResults() {
+      results = [];
+      resultsContainer.innerHTML =
+        `<div class="empty-state"><span class="icon">🖼️</span><p>暂无结果，提交生成任务后自动显示</p></div>`;
+      resultCount.textContent = '0 个文件';
+    }
+
+    function downloadAll() {
+      const links = resultsContainer.querySelectorAll('.result-item .info .dl-link');
+      if (links.length === 0) { alert('没有可下载的文件'); return; }
+      for (const el of links) {
+        const a = document.createElement('a');
+        a.href = el.href;
+        const parent = el.closest('.result-item');
+        const fn = parent?.querySelector('.filename')?.textContent || 'file';
+        a.download = fn;
+        a.target = '_blank';
+        a.click();
+      }
+      log(`📦 已触发 ${links.length} 个文件的下载`, 'ok');
+    }
+
+    // ========== 事件绑定 ==========
+    generateBtn.addEventListener('click', runGenerate);
+    stopBtn.addEventListener('click', stopPollingManually);
+    clearResultBtn.addEventListener('click', clearResults);
+    addParamBtn.addEventListener('click', () => addParam());
+    clearParamsBtn.addEventListener('click', clearParams);
+    loadWorkflowsBtn.addEventListener('click', loadWorkflows);
+    if (settingsBtn) settingsBtn.addEventListener('click', () => {
+      if (getProxyBase()) {
+        alert('当前为 🛡️ 代理模式：\n\nComfyUI 服务器地址由云端代理管理，本机无需（也无法）直接填写。\n\n如需改回直连模式，请到上方「AI服务器管理」区点 🛡️ 代理，清空代理地址。');
+        return;
+      }
+      const cur = baseUrlInput.value.trim();
+      const input = prompt('填写 ComfyUI 服务器地址（BASE URL）\n例如 https://xxxxx.seetacloud.com:8443\n（只保存在你本机浏览器，不会写入网页文件）', cur);
+      if (input === null) return;
+      const v = input.trim().replace(/\/+$/, '');
+      baseUrlInput.value = v;
+      try { v ? localStorage.setItem(BASE_KEY, v) : localStorage.removeItem(BASE_KEY); } catch (e) {}
+      if (v) {
+        log('⚙️ 已更新服务器地址: ' + v, 'ok');
+        loadWorkflows();
+        loadInputAssets();
+        loadOutputAssets();
+      } else {
+        log('⚙️ 已清除服务器地址', 'warn');
+      }
+    });
+    loadConfigBtn.addEventListener('click', () => {
+      const id = getWorkflowId();
+      if (id) loadWorkflowConfig(id);
+      else alert('请填写或选择工作流 ID');
+    });
+    workflowSelect.addEventListener('change', (e) => {
+      if (e.target.value) { workflowIdInput.value = e.target.value;
+        loadWorkflowConfig(e.target.value); }
+    });
+    workflowIdInput.addEventListener('change', () => {
+      const val = workflowIdInput.value.trim();
+      const opts = workflowSelect.options;
+      for (let i = 0; i < opts.length; i++) { if (opts[i].value === val) { workflowSelect.value = val; break; } }
+    });
+
+    // 上传区
+    uploadZoneCompact.addEventListener('click', () => {
+      console.log('[DEBUG] 点击上传区域');
+      fileInputCompact.click();
+    });
+    uploadZoneCompact.addEventListener('dragover', (e) => { e.preventDefault();
+      uploadZoneCompact.classList.add('dragover'); });
+    uploadZoneCompact.addEventListener('dragleave', () => { uploadZoneCompact.classList.remove('dragover'); });
+    uploadZoneCompact.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZoneCompact.classList.remove('dragover');
+      if (e.dataTransfer.files.length > 0) handleFileUpload(e.dataTransfer.files[0]);
+    });
+    fileInputCompact.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) handleFileUpload(e.target.files[0]);
+      e.target.value = '';
+    });
+
+    hiddenFileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0 && pendingUploadRowIndex >= 0) {
+        const idx = pendingUploadRowIndex;
+        const file = e.target.files[0];
+        const uploadPromise = (async () => {
+          const url = getBaseUrl();
+          if (!url) throw new Error('请填写 BASE URL');
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('overwrite', 'true');
+          const resp = await fetch(`${url}/api/comfy/upload/file`, { method: 'POST', body: formData });
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          return await resp.json();
+        })();
+        uploadPromise.then(data => {
+          if (idx < params.length) {
+            params[idx].value = data.name;
+            renderParams();
+            loadInputAssets();
+            const row = paramBody.querySelector(`tr[data-index="${idx}"]`);
+            if (row) { row.style.transition = 'background 0.3s';
+              row.style.background = 'var(--primary-light)';
+              setTimeout(() => row.style.background = '', 1000); }
+            log(`📎 已为参数 #${idx+1} 填入文件: ${data.name}`, 'ok');
+          }
+          pendingUploadRowIndex = -1;
+        }).catch(err => {
+          log(`❌ 上传失败: ${err.message}`, 'err');
+          alert('上传失败: ' + err.message);
+          pendingUploadRowIndex = -1;
+        });
+      } else { pendingUploadRowIndex = -1; }
+      e.target.value = '';
+    });
+
+    refreshInputBtn.addEventListener('click', loadInputAssets);
+    refreshOutputBtn.addEventListener('click', loadOutputAssets);
+    document.getElementById('ai-downloadAllBtn').addEventListener('click', downloadAll);
+
+    // ========== 初始化 ==========
+    function init() {
+      renderParams();
+      try {
+        const saved = localStorage.getItem(BASE_KEY);
+        if (saved && !getProxyBase()) baseUrlInput.value = saved;
+      } catch (e) {}
+      if (getProxyBase()) {
+        baseUrlInput.value = '';
+        baseUrlInput.placeholder = '🛡️ 代理模式：服务器地址由云端代理管理，无需填写';
+      } else {
+        baseUrlInput.placeholder = '点右上角 ⚙️ 服务器 设置地址';
+      }
+      baseUrlInput.addEventListener('change', () => { try { localStorage.setItem(BASE_KEY, baseUrlInput.value.trim()); } catch (
+          e) {} });
+      log('🟢 就绪，请选择工作流并点击「加载参数」', '');
+      setStatus('就绪', 'idle');
+      setTimeout(() => { loadWorkflows();
+        loadInputAssets();
+        loadOutputAssets(); }, 500);
+    }
+    init();
+  })();
+</script>
+
+</body>
+</html>
