@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
 <title>内容管理后台 · AI视频工坊</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -173,6 +174,41 @@ a { color: var(--primary); text-decoration: none; }
 </div>
 
 <input type="file" id="filePicker" style="display:none">
+<script>
+/* ===== 后台访问口令（防误入门闩，非安全边界）=====
+   enabled : true 开启门闩 / false 关闭
+   code    : 访客需输入的口令，改成你自己的（仅防君子，改内容仍需GitHub Token）
+   提示：每次关闭浏览器后自动重新上锁 */
+var ADMIN_LOCK_ENABLED = true;
+var ADMIN_ACCESS_CODE = "lls268269";
+(function () {
+  if (!ADMIN_LOCK_ENABLED || sessionStorage.getItem("admin_unlocked") === "1") return;
+  var wrap = document.createElement("div");
+  wrap.style.cssText = "position:fixed;inset:0;background:#1a1430;z-index:9999;display:flex;align-items:center;justify-content:center;";
+  wrap.innerHTML =
+    '<div style="background:#fff;border-radius:14px;padding:30px 34px;width:320px;text-align:center;font-family:inherit">' +
+    '<div style="font-size:30px;margin-bottom:8px">🔒</div>' +
+    '<div style="font-size:16px;font-weight:700;color:#241b3a;margin-bottom:4px">管理后台</div>' +
+    '<div style="font-size:12.5px;color:#6b6280;margin-bottom:16px">请输入管理口令进入</div>' +
+    '<input type="password" id="lockInput" placeholder="管理口令" style="width:100%;padding:10px 12px;border:1.5px solid #e5def5;border-radius:8px;font-size:14px;box-sizing:border-box;outline:none">' +
+    '<div id="lockErr" style="font-size:12px;color:#e04355;height:18px;margin-top:6px"></div>' +
+    '<button id="lockBtn" style="width:100%;padding:10px;background:#6d3df5;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">进入后台</button>' +
+    '</div>';
+  (document.body || document.documentElement).appendChild(wrap);
+  function tryUnlock() {
+    if (document.getElementById("lockInput").value === ADMIN_ACCESS_CODE) {
+      sessionStorage.setItem("admin_unlocked", "1");
+      wrap.remove();
+    } else {
+      document.getElementById("lockErr").textContent = "口令不正确";
+      document.getElementById("lockInput").value = "";
+    }
+  }
+  document.getElementById("lockBtn").onclick = tryUnlock;
+  document.getElementById("lockInput").addEventListener("keydown", function (e) { if (e.key === "Enter") tryUnlock(); });
+  setTimeout(function () { document.getElementById("lockInput").focus(); }, 50);
+})();
+</script>
 <script src="content.js"></script>
 <script src="js/admin.js"></script>
 </body>
