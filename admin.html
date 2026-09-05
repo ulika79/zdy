@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>内容管理后台 · AI视频工坊</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #6d3df5; --primary-dark: #5327d4; --primary-light: #f0ebff;
+  --accent: #ff5c8a; --text: #241b3a; --text-light: #6b6280;
+  --bg: #f6f4fb; --card: #fff; --border: #e5def5; --ok: #1faa6b; --warn: #e6a700; --err: #e04355;
+}
+body { font-family: "PingFang SC","Microsoft YaHei","Segoe UI",sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; font-size: 14px; }
+a { color: var(--primary); text-decoration: none; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 18px; }
+
+.topbar { background: #1a1430; color: #fff; padding: 14px 0; position: sticky; top: 0; z-index: 50; }
+.topbar-inner { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.topbar h1 { font-size: 17px; flex: 1; }
+.topbar h1 small { opacity: .55; font-weight: 400; margin-left: 8px; }
+.btn { border: none; cursor: pointer; border-radius: 8px; padding: 8px 16px; font-size: 13.5px; font-weight: 600; transition: all .15s; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary { background: var(--primary); color: #fff; } .btn-primary:hover { background: var(--primary-dark); }
+.btn-ghost { background: rgba(255,255,255,.12); color: #fff; } .btn-ghost:hover { background: rgba(255,255,255,.22); }
+.btn-outline { background: #fff; border: 1.5px solid var(--border); color: var(--text); } .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+.btn-danger { background: #fdecee; color: var(--err); } .btn-danger:hover { background: #f9d9dd; }
+.btn-ok { background: var(--ok); color: #fff; } .btn-ok:hover { filter: brightness(1.08); }
+.btn-sm { padding: 4px 10px; font-size: 12px; border-radius: 6px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.tabs { display: flex; gap: 6px; margin: 18px 0; flex-wrap: wrap; }
+.tab { padding: 8px 20px; border-radius: 999px; background: #fff; border: 1.5px solid var(--border); cursor: pointer; font-weight: 600; font-size: 14px; }
+.tab.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+.layout { display: grid; grid-template-columns: 250px 1fr; gap: 16px; align-items: start; }
+@media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+.panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; box-shadow: 0 3px 14px rgba(60,30,130,.06); }
+.panel + .panel { margin-top: 16px; }
+.panel h2 { font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.panel h2 small { font-weight: 400; color: var(--text-light); font-size: 12px; }
+
+.page-item { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 9px; cursor: pointer; border: 1.5px solid transparent; margin-bottom: 4px; }
+.page-item:hover { background: var(--primary-light); }
+.page-item.active { background: var(--primary-light); border-color: var(--primary); }
+.page-item .p-title { flex: 1; font-weight: 600; font-size: 13.5px; }
+.page-item .p-title small { display: block; color: var(--text-light); font-weight: 400; font-size: 11px; }
+.page-item .op { font-size: 11px; color: var(--text-light); }
+.hidden-tag { font-size: 10px; background: #eee; padding: 1px 6px; border-radius: 4px; color: var(--text-light); }
+
+.field { margin-bottom: 13px; }
+.field label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px; color: var(--text); }
+.field label small { color: var(--text-light); font-weight: 400; }
+.field input[type=text], .field input[type=url], .field textarea, .field select {
+  width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; font-family: inherit; background: #fff; color: var(--text);
+}
+.field textarea { resize: vertical; min-height: 84px; }
+.field textarea.html-area { min-height: 220px; font-family: Consolas, monospace; font-size: 12.5px; }
+.field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--primary); }
+.field .hint { font-size: 11.5px; color: var(--text-light); margin-top: 4px; }
+
+.list-editor { border: 1.5px dashed var(--border); border-radius: 10px; padding: 12px; margin-bottom: 13px; background: #fbfaff; }
+.list-editor .le-title { font-size: 12.5px; font-weight: 700; margin-bottom: 8px; }
+.le-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; }
+.le-row input { flex: 1; min-width: 130px; padding: 7px 10px; border: 1.5px solid var(--border); border-radius: 7px; font-size: 13px; }
+.le-row textarea { flex: 1 1 100%; padding: 7px 10px; border: 1.5px solid var(--border); border-radius: 7px; font-size: 13px; font-family: inherit; }
+.media-row { display: flex; gap: 6px; align-items: center; }
+.media-row input { flex: 1; }
+.upload-btn { white-space: nowrap; }
+
+.section-item { border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 10px; background: #fff; }
+.section-head { display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer; }
+.section-head .s-type { font-size: 11px; background: var(--primary-light); color: var(--primary-dark); padding: 2px 9px; border-radius: 999px; font-weight: 700; }
+.section-head .s-title { flex: 1; font-weight: 600; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.section-head .s-ops { display: flex; gap: 3px; }
+.section-head .s-ops button { background: none; border: none; cursor: pointer; font-size: 15px; padding: 3px 6px; border-radius: 5px; }
+.section-head .s-ops button:hover { background: var(--primary-light); }
+.section-body { border-top: 1.5px solid var(--border); padding: 16px; }
+
+.type-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.type-card { border: 1.5px solid var(--border); border-radius: 10px; padding: 12px; cursor: pointer; text-align: center; transition: all .15s; }
+.type-card:hover { border-color: var(--primary); background: var(--primary-light); }
+.type-card .t-icon { font-size: 24px; }
+.type-card .t-name { font-weight: 700; font-size: 13px; margin-top: 4px; }
+.type-card .t-desc { font-size: 11px; color: var(--text-light); }
+
+.log-box { background: #1a1430; color: #c9f7dd; border-radius: 9px; padding: 14px; font-family: Consolas, monospace; font-size: 12px; max-height: 280px; overflow-y: auto; white-space: pre-wrap; }
+.log-box .err { color: #ff9c9c; } .log-box .warn { color: #ffe08a; }
+.status-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; }
+.dot-draft { background: var(--warn); } .dot-published { background: var(--ok); }
+
+.notice { background: #fff8e6; border: 1px solid #f5df9a; border-radius: 9px; padding: 12px 15px; font-size: 12.5px; margin-bottom: 14px; color: #7a5b00; }
+.notice b { display: block; margin-bottom: 3px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+@media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+.actions-bar { display: flex; gap: 10px; flex-wrap: wrap; margin: 4px 0 14px; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="container topbar-inner">
+    <h1>⚙️ 内容管理后台<small>页面 · 文章 · 图片 · 视频 · 音频 全部可视化编辑</small></h1>
+    <a class="btn btn-ghost" href="index.html" target="_blank">👁 查看网站</a>
+    <button class="btn btn-primary" id="btnSavePreview">💾 保存并预览</button>
+    <button class="btn btn-ok" id="btnPublish">🚀 发布到GitHub</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <div class="tab active" data-tab="pages">📄 页面管理</div>
+    <div class="tab" data-tab="site">🔧 站点设置</div>
+    <div class="tab" data-tab="publish">🚀 发布与备份</div>
+  </div>
+  <p id="statusBar" style="font-size:12.5px;color:var(--text-light);margin-bottom:14px"></p>
+
+  <!-- 页面管理 -->
+  <div id="tab-pages" class="layout">
+    <div class="panel">
+      <h2>📂 页面列表 <button class="btn btn-primary btn-sm" id="btnAddPage" style="margin-left:auto">＋ 新建页面</button></h2>
+      <div id="pageList"></div>
+    </div>
+    <div id="pageEditor"><div class="panel"><p style="color:var(--text-light)">← 选择或新建一个页面开始编辑</p></div></div>
+  </div>
+
+  <!-- 站点设置 -->
+  <div id="tab-site" style="display:none">
+    <div class="panel" style="max-width:640px">
+      <h2>🔧 站点基础信息</h2>
+      <div id="siteSettings"></div>
+    </div>
+  </div>
+
+  <!-- 发布 -->
+  <div id="tab-publish" style="display:none">
+    <div class="notice"><b>📌 工作原理</b>本站为纯静态网站，所有内容存在 content.js 一个文件里。编辑后「保存并预览」仅本机可见；「发布到GitHub」会把 content.js 和上传的媒体文件提交到你的仓库，GitHub Pages 自动更新上线。</div>
+    <div class="layout">
+      <div class="panel">
+        <h2>🚀 GitHub 发布配置</h2>
+        <div class="field"><label>GitHub 用户名</label><input type="text" id="ghOwner" placeholder="你的GitHub用户名"></div>
+        <div class="field"><label>仓库名</label><input type="text" id="ghRepo" placeholder="如 my-ai-video-site"></div>
+        <div class="field"><label>分支</label><input type="text" id="ghBranch" placeholder="main（或 gh-pages）"></div>
+        <div class="field"><label>Personal Access Token (PAT)</label><input type="text" id="ghToken" placeholder="ghp_ 开头 · 仅存在你本机浏览器">
+          <div class="hint">GitHub → Settings → Developer settings → Personal access tokens → 生成经典Token，勾选 <b>repo</b> 权限。Fine-grained Token 则勾选目标仓库的 Contents: Read and write。</div></div>
+        <div class="actions-bar">
+          <button class="btn btn-outline" id="btnSaveGh">保存配置</button>
+          <button class="btn btn-outline" id="btnTestGh">测试连接</button>
+          <button class="btn btn-ok" id="btnPublish2">🚀 立即发布</button>
+        </div>
+        <div class="log-box" id="logBox">等待操作…</div>
+      </div>
+      <div>
+        <div class="panel">
+          <h2>💾 备份与恢复</h2>
+          <div class="actions-bar">
+            <button class="btn btn-outline" id="btnExport">⬇️ 导出 content.js</button>
+            <button class="btn btn-outline" id="btnImport">⬆️ 从文件导入</button>
+            <button class="btn btn-danger" id="btnReset">↩️ 重置为已发布版本</button>
+          </div>
+          <p style="font-size:12px;color:var(--text-light)">导出的文件也可手动放进仓库根目录覆盖 content.js 完成更新。</p>
+        </div>
+        <div class="panel">
+          <h2>📏 媒体文件建议</h2>
+          <ul style="font-size:12.5px;color:var(--text-light);padding-left:18px">
+            <li>单文件 &lt; 20MB（GitHub限制100MB，小文件加载更快）</li>
+            <li>大视频建议先传到视频平台，粘贴分享/embed链接</li>
+            <li>图片推荐 JPG/WebP，宽度 ≤ 1600px</li>
+            <li>仓库总大小建议控制在 1GB 以内</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="filePicker" style="display:none">
+<script src="content.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
